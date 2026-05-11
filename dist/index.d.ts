@@ -7,6 +7,7 @@
 export type { TradeEntry, TradeStatistics, TradeDirection, TradeStatus, TradingSession, ImpactLevel, AlertType, SessionStats, MarketData, IndicatorData, FeedStatus, Alert, EconomicEvent, DailyBriefing, RiskStatus, PropPhase, } from '../types/trading';
 export type { ChartConfig, ChartData, Dataset, ChartOptions, DashboardState, ScannerCondition, TradeTableProps, StatisticsCardProps, ChartComponentProps, AlertComponentProps, SessionTimerProps, Theme, ViewMode, TimeRange, TradeUpdateHandler, PriceUpdateHandler, AlertHandler, ApiResponse, DataUpdateEvent, } from '../types/dashboard';
 export { StateManager, stateManager } from './utils/StateManager';
+export { calculatePnL, calculateR, getTodayTrades, calculateTotalPnL, calculateTodayPnL, getTradingStatistics, getEnhancedStatistics, formatStatistics, getTodayString, type TradingStatistics, } from './utils/statistics';
 export declare const VERSION = "1.0.0";
 export declare const TYPEScript_ENABLED = true;
 /**

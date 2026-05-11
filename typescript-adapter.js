@@ -204,7 +204,17 @@
         getStats: () => bridge.getEnhancedStats(),
         getState: () => stateManager.getState(),
         addTrade: (trade) => bridge.addTrade(trade),
-        isEnabled: () => true
+        isEnabled: () => true,
+        
+        // Phase 1: Statistics Module (from statistics.ts)
+        calculatePnL: module.calculatePnL,
+        calculateR: module.calculateR,
+        getTradingStatistics: module.getTradingStatistics,
+        getEnhancedStatistics: module.getEnhancedStatistics,
+        formatStatistics: module.formatStatistics,
+        calculateTotalPnL: module.calculateTotalPnL,
+        calculateTodayPnL: module.calculateTodayPnL,
+        VERSION: module.VERSION
       };
 
       console.log('[TS] ✅ Integration active - TypeScript enhancements available');

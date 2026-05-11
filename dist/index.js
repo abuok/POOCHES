@@ -6,6 +6,8 @@
  */
 // Export utilities
 export { StateManager, stateManager } from './utils/StateManager';
+// Export statistics module (Phase 1 TypeScript migration)
+export { calculatePnL, calculateR, getTodayTrades, calculateTotalPnL, calculateTodayPnL, getTradingStatistics, getEnhancedStatistics, formatStatistics, getTodayString, } from './utils/statistics';
 // Version info
 export const VERSION = '1.0.0';
 export const TYPEScript_ENABLED = true;
