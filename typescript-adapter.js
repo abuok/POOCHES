@@ -217,8 +217,25 @@
         VERSION: module.VERSION
       };
 
+      // ═══════════════════════════════════════════════════════════════════
+      // PHASE 5: UI BRIDGE - Listen to TypeScript state changes
+      // ═══════════════════════════════════════════════════════════════════
+      const uiBridge = new TypeScriptUIBridge(stateManager, bridge);
+      uiBridge.initialize();
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // PHASE 6: EVENT BRIDGE - Real-time sync between TS and vanilla JS
+      // ═══════════════════════════════════════════════════════════════════
+      const eventBridge = new EventBridge(stateManager);
+      eventBridge.initialize();
+      
+      // Store UI and event bridges
+      window.TS_INTEGRATION.uiBridge = uiBridge;
+      window.TS_INTEGRATION.eventBridge = eventBridge;
+
       console.log('[TS] ✅ Integration active - TypeScript enhancements available');
       console.log('[TS] Access via: window.tsBridge or window.TS_INTEGRATION');
+      console.log('[TS] UI Bridge and Event Sync initialized');
       
       return true;
     } catch (error) {
@@ -246,7 +263,202 @@
     setTimeout(initTypeScriptIntegration, 500);
   }
 
+  // ═══════════════════════════════════════════════════════════════════
+  // PHASE 5: TYPESCRIPT UI BRIDGE CLASS
+  // Listens to StateManager changes and triggers UI updates
+  // ═══════════════════════════════════════════════════════════════════
+  class TypeScriptUIBridge {
+    constructor(stateManager, tsBridge) {
+      this.stateManager = stateManager;
+      this.tsBridge = tsBridge;
+      this.unsubscribe = null;
+      this.isInitialized = false;
+    }
+
+    initialize() {
+      if (this.isInitialized) return;
+      
+      // Subscribe to StateManager state changes
+      this.unsubscribe = this.stateManager.subscribe((newState, prevState) => {
+        this.handleStateChange(newState, prevState);
+      });
+      
+      this.isInitialized = true;
+      console.log('[TS-UI] Bridge initialized - listening for state changes');
+    }
+
+    handleStateChange(newState, prevState) {
+      // Detect trade count changes
+      const newTradeCount = newState.todayTrades?.length || 0;
+      const prevTradeCount = prevState?.todayTrades?.length || 0;
+      
+      if (newTradeCount !== prevTradeCount) {
+        console.log(`[TS-UI] Trade count changed: ${prevTradeCount} → ${newTradeCount}`);
+        this.triggerUIUpdate('trades', newState.todayTrades);
+      }
+      
+      // Detect P&L changes
+      const newPnL = newState.todayPnL;
+      const prevPnL = prevState?.todayPnL;
+      if (newPnL !== prevPnL) {
+        console.log(`[TS-UI] P&L changed: ${prevPnL} → ${newPnL}`);
+        this.triggerUIUpdate('pnl', newPnL);
+      }
+      
+      // Detect alert changes
+      const newAlertCount = newState.alerts?.length || 0;
+      const prevAlertCount = prevState?.alerts?.length || 0;
+      if (newAlertCount !== prevAlertCount) {
+        this.triggerUIUpdate('alerts', newState.alerts);
+      }
+    }
+
+    triggerUIUpdate(type, data) {
+      // Dispatch custom events for HTML to listen to
+      const event = new CustomEvent('ts-state-change', {
+        detail: { type, data, timestamp: Date.now() }
+      });
+      document.dispatchEvent(event);
+      
+      // Also try to call vanilla JS update functions if they exist
+      if (typeof window.renderJournal === 'function') {
+        try {
+          window.renderJournal();
+          console.log('[TS-UI] renderJournal() triggered');
+        } catch (e) {
+          // Silently fail - vanilla JS functions may not exist yet
+        }
+      }
+      
+      if (typeof window.updateJournalStats === 'function') {
+        try {
+          window.updateJournalStats();
+        } catch (e) {
+          // Silently fail
+        }
+      }
+      
+      if (typeof window.tickHeader === 'function') {
+        try {
+          window.tickHeader();
+        } catch (e) {
+          // Silently fail
+        }
+      }
+    }
+
+    destroy() {
+      if (this.unsubscribe) {
+        this.unsubscribe();
+        this.unsubscribe = null;
+      }
+      this.isInitialized = false;
+      console.log('[TS-UI] Bridge destroyed');
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // PHASE 6: EVENT BRIDGE - Two-way sync between TS and Vanilla JS
+  // ═══════════════════════════════════════════════════════════════════
+  class EventBridge {
+    constructor(stateManager) {
+      this.stateManager = stateManager;
+      this.listeners = [];
+    }
+
+    initialize() {
+      // Listen for vanilla JS events and sync to TypeScript
+      this.setupVanillaJSEventListeners();
+      
+      // Listen for TypeScript state changes and sync to vanilla JS
+      this.setupTypeScriptEventListeners();
+      
+      console.log('[TS-Event] Two-way sync bridge initialized');
+    }
+
+    setupVanillaJSEventListeners() {
+      // Listen for custom events from HTML dashboard
+      document.addEventListener('trade-added', (e) => {
+        if (e.detail?.trade) {
+          console.log('[TS-Event] Trade added via vanilla JS event');
+          this.syncVanillaTradeToTypeScript(e.detail.trade);
+        }
+      });
+      
+      document.addEventListener('trade-removed', (e) => {
+        if (e.detail?.tradeId) {
+          console.log('[TS-Event] Trade removed via vanilla JS event');
+          this.stateManager.removeTrade(e.detail.tradeId);
+        }
+      });
+      
+      document.addEventListener('state-saved', () => {
+        console.log('[TS-Event] State saved event received');
+        this.stateManager.saveState();
+      });
+    }
+
+    setupTypeScriptEventListeners() {
+      // Subscribe to StateManager and emit vanilla JS events
+      const unsubscribe = this.stateManager.subscribe((newState, prevState) => {
+        // Emit sync event for vanilla JS to pick up
+        const syncEvent = new CustomEvent('ts-sync', {
+          detail: { 
+            state: newState, 
+            changed: this.getChangedFields(newState, prevState),
+            timestamp: Date.now()
+          }
+        });
+        document.dispatchEvent(syncEvent);
+      });
+      
+      this.listeners.push(unsubscribe);
+    }
+
+    getChangedFields(newState, prevState) {
+      const changed = [];
+      if (!prevState) return changed;
+      
+      if (newState.todayTrades?.length !== prevState.todayTrades?.length) {
+        changed.push('trades');
+      }
+      if (newState.todayPnL !== prevState.todayPnL) {
+        changed.push('pnl');
+      }
+      if (newState.alerts?.length !== prevState.alerts?.length) {
+        changed.push('alerts');
+      }
+      
+      return changed;
+    }
+
+    syncVanillaTradeToTypeScript(trade) {
+      const tsTrade = {
+        id: trade.id || `trade-${Date.now()}`,
+        direction: trade.dir || trade.direction || 'LONG',
+        entryPrice: parseFloat(trade.entry) || 0,
+        exitPrice: parseFloat(trade.exit) || 0,
+        sl: parseFloat(trade.sl) || 0,
+        tp: parseFloat(trade.tp1 || trade.tp) || 0,
+        size: parseFloat(trade.lots) || 0,
+        date: trade.date || new Date().toISOString().split('T')[0],
+        status: trade.exit ? 'closed' : 'open',
+        session: trade.session || 'London',
+        setup: trade.strategy || '',
+        notes: trade.notes || ''
+      };
+      
+      this.stateManager.addTrade(tsTrade);
+    }
+
+    destroy() {
+      this.listeners.forEach(unsub => unsub());
+      this.listeners = [];
+      console.log('[TS-Event] Bridge destroyed');
+    }
+  }
+
   // Also expose init function for manual retry
-  window.initTypeScript = initTypeScriptIntegration;
+  window.initTypeScriptIntegration = initTypeScriptIntegration;
 
 })();

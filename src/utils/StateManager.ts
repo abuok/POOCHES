@@ -279,6 +279,121 @@ export class StateManager {
     localStorage.removeItem(this.STORAGE_KEY);
     this.notifyListeners();
   }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // PHASE 4: LEGACY SYNC METHODS
+  // Bridge between vanilla JS and TypeScript state
+  // ═══════════════════════════════════════════════════════════════════
+
+  /**
+   * Sync legacy trades array from vanilla JS into TypeScript state
+   * Called by loadAll() in HTML when loading from localStorage
+   */
+  public syncLegacyTrades(legacyTrades: any[]): void {
+    if (!Array.isArray(legacyTrades)) return;
+    
+    const convertedTrades: TradeEntry[] = legacyTrades.map((t, index) => ({
+      id: t.id || `legacy-${Date.now()}-${index}`,
+      direction: t.dir || t.direction || 'LONG',
+      entryPrice: parseFloat(t.entry) || 0,
+      exitPrice: parseFloat(t.exit) || 0,
+      sl: parseFloat(t.sl) || 0,
+      tp: parseFloat(t.tp1 || t.tp) || 0,
+      size: parseFloat(t.lots) || 0,
+      date: t.date || new Date().toISOString().split('T')[0],
+      status: t.exit ? 'closed' : 'open',
+      pnl: parseFloat(t.pnl) || 0,
+      r: parseFloat(t.r) || 0,
+      session: t.session || 'London',
+      setup: t.strategy || '',
+      notes: t.notes || '',
+    }));
+    
+    this.state.todayTrades = convertedTrades;
+    this.calculateTodayPnL();
+    this.notifyListeners();
+    console.log('[TS] Synced', convertedTrades.length, 'legacy trades');
+  }
+
+  /**
+   * Sync legacy settings (S object) from vanilla JS
+   */
+  public syncLegacySettings(settings: any): void {
+    if (!settings) return;
+    
+    // Update feed status with settings
+    this.state.feedStatus = {
+      ...this.state.feedStatus,
+      price: parseFloat(settings.price) || this.state.feedStatus.price,
+    };
+    
+    // Update risk status
+    if (settings.risk !== undefined) {
+      const riskLevel = settings.risk > 5 ? 'danger' : 'safe';
+      this.state.riskStatus = {
+        level: riskLevel,
+        message: `Risk: ${settings.risk}%`,
+      };
+    }
+    
+    this.notifyListeners();
+    console.log('[TS] Synced legacy settings');
+  }
+
+  /**
+   * Export TypeScript state in legacy format for vanilla JS
+   * Called when HTML needs to access TypeScript-managed trades
+   */
+  public exportToLegacyFormat(): { trades: any[], settings: any } {
+    const legacyTrades = this.state.todayTrades.map(t => ({
+      id: t.id,
+      date: t.date,
+      dir: t.direction,
+      entry: t.entryPrice,
+      exit: t.exitPrice,
+      sl: t.sl,
+      tp1: t.tp,
+      lots: t.size,
+      pnl: t.pnl,
+      r: t.r,
+      status: t.status,
+      session: t.session,
+      strategy: t.setup,
+      notes: t.notes,
+    }));
+    
+    return {
+      trades: legacyTrades,
+      settings: {
+        price: this.state.feedStatus.price,
+        risk: this.state.riskStatus.level === 'danger' ? 8 : 2,
+      }
+    };
+  }
+
+  /**
+   * Force TypeScript state to persist to localStorage
+   * Called by saveAll() in HTML
+   */
+  public forcePersist(): void {
+    this.saveState();
+    console.log('[TS] State persisted via forcePersist');
+  }
+
+  /**
+   * Load from TypeScript storage (different key than vanilla JS)
+   * Returns true if data was loaded
+   */
+  public loadFromTSStorage(): boolean {
+    const loaded = this.loadInitialState();
+    const hasData = loaded.todayTrades.length > 0;
+    if (hasData) {
+      this.state = loaded;
+      this.notifyListeners();
+      console.log('[TS] Loaded', loaded.todayTrades.length, 'trades from TS storage');
+    }
+    return hasData;
+  }
 }
 
 export const stateManager = StateManager.getInstance();

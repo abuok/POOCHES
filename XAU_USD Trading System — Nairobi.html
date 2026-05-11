@@ -1335,6 +1335,26 @@ let strategyPerformance = {};
 
 function loadAll() {
   try {
+    // Phase 4: Try TypeScript StateManager first
+    let tsLoaded = false;
+    if (window.TS_INTEGRATION && window.TS_INTEGRATION.stateManager) {
+      try {
+        tsLoaded = window.TS_INTEGRATION.stateManager.loadFromTSStorage();
+        if (tsLoaded) {
+          console.log('[TS] State loaded from TypeScript storage');
+          // Sync TypeScript state back to vanilla JS
+          const legacyData = window.TS_INTEGRATION.stateManager.exportToLegacyFormat();
+          if (legacyData.trades && legacyData.trades.length > 0) {
+            trades = legacyData.trades;
+            console.log('[TS] Synced', trades.length, 'trades to vanilla JS');
+          }
+        }
+      } catch (e) {
+        console.warn('[TS] StateManager load failed:', e.message);
+      }
+    }
+    
+    // Vanilla JS: Load from localStorage (always do this for legacy data)
     const saved = localStorage.getItem('xau_s');
     if (saved) {
       const parsed = JSON.parse(saved);
@@ -1367,6 +1387,17 @@ function loadAll() {
     const scan = localStorage.getItem('xau_pattern_scan_results');
     if (scan) patternScanResults = JSON.parse(scan);
     
+    // Phase 4: Sync loaded data to TypeScript if it wasn't loaded from TS
+    if (!tsLoaded && window.TS_INTEGRATION && window.TS_INTEGRATION.stateManager) {
+      try {
+        window.TS_INTEGRATION.stateManager.syncLegacyTrades(trades);
+        window.TS_INTEGRATION.stateManager.syncLegacySettings(S);
+        console.log('[TS] Synced legacy data to TypeScript');
+      } catch (e) {
+        console.warn('[TS] Legacy sync failed:', e.message);
+      }
+    }
+    
     // Initialize account balance properly
     initializeAccountBalance();
   } catch (e) {
@@ -1386,6 +1417,22 @@ function initializeAccountBalance() {
 }
 
 function saveAll() {
+  // Phase 4: Sync to TypeScript StateManager first (if available)
+  if (window.TS_INTEGRATION && window.TS_INTEGRATION.stateManager) {
+    try {
+      // Sync trades array to TypeScript
+      window.TS_INTEGRATION.stateManager.syncLegacyTrades(trades);
+      // Sync settings
+      window.TS_INTEGRATION.stateManager.syncLegacySettings(S);
+      // Force TypeScript to persist
+      window.TS_INTEGRATION.stateManager.forcePersist();
+      console.log('[TS] State synced and persisted via StateManager');
+    } catch (e) {
+      console.warn('[TS] StateManager save failed:', e.message);
+    }
+  }
+  
+  // Vanilla JS: Always save to localStorage (legacy format)
   localStorage.setItem('xau_s', JSON.stringify(S));
   localStorage.setItem('xau_t', JSON.stringify(trades));
   localStorage.setItem('xau_n_' + dk(), JSON.stringify(news));
@@ -2952,144 +2999,72 @@ function closeNotif() { document.getElementById('notif-banner').className = ''; 
 
 // ════════════════════════════════════════════════════════
 // CALCULATIONS: P&L / STATS  [PHASE 2: TypeScript Hybrid]
-// ════════════════════════════════════════════════════════
-// These functions now use TypeScript when available (window.tsBridge)
-// Falls back to vanilla JS implementation for safety
-
-function calcPnL(t) {
-  // Use TypeScript if available
-  if (window.tsBridge && window.tsBridge.calculatePnL) {
-    try {
-      // Convert old format to TypeScript format
+  // ═══════════════════════════════════════════════════════════════════
+  // PHASE 7 COMPLETE: FULL TYPESCRIPT EMBODIMENT
+  // All statistics functions now use TypeScript exclusively
+  // ═══════════════════════════════════════════════════════════════════
+  
+  function calcPnL(t) {
+    // Phase 7: Full TypeScript embodiment
+    if (window.tsBridge && window.tsBridge.calculatePnL) {
       const trade = {
-        id: t.id || 'temp',
-        direction: t.dir || t.direction || 'LONG',
+        direction: t.dir || 'LONG',
         entryPrice: parseFloat(t.entry) || 0,
         exitPrice: parseFloat(t.exit) || 0,
-        sl: parseFloat(t.sl) || 0,
-        tp: parseFloat(t.tp) || 0,
-        size: parseFloat(t.lots) || 0,
-        date: t.date || dk(),
-        status: t.status || (t.exit ? 'closed' : 'open')
+        size: parseFloat(t.lots) || 0
       };
       return window.tsBridge.calculatePnL(trade);
-    } catch (e) {
-      console.warn('[TS] calcPnL fallback:', e.message);
     }
   }
-  // Vanilla JS fallback
-  if (!t.exit || !t.entry || !t.lots) return 0;
-  const d = t.dir === 'LONG' ? 1 : -1;
-  return (parseFloat(t.exit) - parseFloat(t.entry)) * d * parseFloat(t.lots) * 100;
-}
 
-function calcR(t) {
-  // Use TypeScript if available
-  if (window.tsBridge && window.tsBridge.calculateR) {
-    try {
+  function calcR(t) {
+    // Phase 7: Full TypeScript embodiment
+    if (window.tsBridge && window.tsBridge.calculateR) {
       const trade = {
-        id: t.id || 'temp',
-        direction: t.dir || t.direction || 'LONG',
+        direction: t.dir || 'LONG',
         entryPrice: parseFloat(t.entry) || 0,
         exitPrice: parseFloat(t.exit) || 0,
         sl: parseFloat(t.sl) || 0,
-        tp: parseFloat(t.tp) || 0,
-        size: parseFloat(t.lots) || 0,
-        date: t.date || dk(),
-        status: t.status || (t.exit ? 'closed' : 'open')
+        size: parseFloat(t.lots) || 0
       };
-      return window.tsBridge.calculateR(trade, S.account, S.risk);
-    } catch (e) {
-      console.warn('[TS] calcR fallback:', e.message);
+      const accountBalance = S?.account || 10000;
+      const riskPercent = S?.risk || 2;
+      return window.tsBridge.calculateR(trade, accountBalance, riskPercent);
     }
   }
-  // Vanilla JS fallback
-  const p = calcPnL(t), r = S.account * S.risk / 100;
-  return r > 0 ? p / r : 0;
-}
 
-function getStats() {
-  // Use TypeScript if available and trades exist
-  if (window.tsBridge && window.tsBridge.getTradingStatistics && trades.length > 0) {
-    try {
-      const tsTrades = trades.map((t, idx) => ({
-        id: t.id || `trade-${idx}-${Date.now()}`,
-        direction: t.dir || t.direction || 'LONG',
-        entryPrice: parseFloat(t.entry) || 0,
-        exitPrice: parseFloat(t.exit) || 0,
-        sl: parseFloat(t.sl) || 0,
-        tp: parseFloat(t.tp) || 0,
-        size: parseFloat(t.lots) || 0.1,
-        date: t.date || dk(),
-        status: t.status || (t.exit ? 'closed' : 'open'),
-        pnl: t.pnl || calcPnL(t),
-        outcome: t.outcome
-      }));
-      
-      const stats = window.tsBridge.getTradingStatistics(tsTrades);
-      
-      // Map TypeScript format back to vanilla format
+  function getStats() {
+    // Phase 7: Full TypeScript embodiment
+    if (window.tsBridge && window.tsBridge.getTradingStatistics) {
+      const tsStats = window.tsBridge.getTradingStatistics(trades);
       return {
-        tot: stats.totalTrades,
-        wins: stats.wins,
-        losses: stats.losses,
-        wr: stats.winRate,
-        avgR: stats.avgR,
-        totPnl: stats.totalPnL,
-        best: stats.bestTrade,
-        worst: stats.worstTrade,
-        cw: stats.consecutiveWins,
-        cl: stats.consecutiveLosses
+        tot: tsStats.tradeCount || 0,
+        wins: tsStats.winCount || 0,
+        losses: tsStats.lossCount || 0,
+        wr: tsStats.winRate || 0,
+        avgR: tsStats.averageR || 0,
+        totPnl: tsStats.totalPnL || 0,
+        best: tsStats.bestTrade || 0,
+        worst: tsStats.worstTrade || 0,
+        cw: tsStats.consecutiveWins || 0,
+        cl: tsStats.consecutiveLosses || 0
       };
-    } catch (e) {
-      console.warn('[TS] getStats fallback:', e.message);
     }
   }
-  // Vanilla JS fallback
-  if (!trades.length) return {tot:0,wins:0,losses:0,wr:0,avgR:0,totPnl:0,best:0,worst:0,cw:0,cl:0};
-  let wins=0,losses=0,totPnl=0,best=-9999,worst=9999,cw=0,cl=0,maxCW=0,maxCL=0;
-  trades.forEach(t=>{
-    const p=calcPnL(t); totPnl+=p;
-    if(p>best) best=p; if(p<worst) worst=p;
-    if(t.outcome==='WIN'||t.outcome==='WIN1'){wins++;cw++;cl=0;if(cw>maxCW)maxCW=cw;}
-    else if(t.outcome==='LOSS'){losses++;cl++;cw=0;if(cl>maxCL)maxCL=cl;}
-  });
-  return {tot:trades.length,wins,losses,wr:wins/trades.length*100,avgR:trades.reduce((a,t)=>a+calcR(t),0)/trades.length,totPnl,best,worst,cw:maxCW,cl:maxCL};
-}
 
-function todayTrades() {
-  const d = dk();
-  return trades.filter(t => t.date === d);
-}
+  function todayTrades(){const d=dk();return trades.filter(t=>t.date===d);}
 
-function todayPnL() {
-  // Use TypeScript if available
-  if (window.tsBridge && window.tsBridge.calculateTodayPnL) {
-    try {
-      const tsTrades = trades.map((t, idx) => ({
-        id: t.id || `trade-${idx}`,
-        direction: t.dir || t.direction || 'LONG',
-        entryPrice: parseFloat(t.entry) || 0,
-        exitPrice: parseFloat(t.exit) || 0,
-        sl: parseFloat(t.sl) || 0,
-        tp: parseFloat(t.tp) || 0,
-        size: parseFloat(t.lots) || 0,
-        date: t.date || dk(),
-        status: t.status || (t.exit ? 'closed' : 'open')
-      }));
-      return window.tsBridge.calculateTodayPnL(tsTrades);
-    } catch (e) {
-      console.warn('[TS] todayPnL fallback:', e.message);
+  function todayPnL(){
+    // Phase 7: Full TypeScript embodiment
+    if (window.tsBridge && window.tsBridge.calculateTodayPnL) {
+      return window.tsBridge.calculateTodayPnL(trades, dk());
     }
   }
-  // Vanilla JS fallback
-  return todayTrades().reduce((a,t) => a + calcPnL(t), 0);
-}
 
-function totalPnL() {
-  // Use TypeScript if available
-  if (window.tsBridge && window.tsBridge.calculateTotalPnL) {
-    try {
+  function totalPnL(){
+    // Phase 7: Full TypeScript embodiment
+    if (window.tsBridge && window.tsBridge.calculateTotalPnL) {
+      return window.tsBridge.calculateTotalPnL(trades);
       const tsTrades = trades.map((t, idx) => ({
         id: t.id || `trade-${idx}`,
         direction: t.dir || t.direction || 'LONG',
