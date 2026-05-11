@@ -2915,15 +2915,101 @@ function fireSignalAlert() {
 function closeNotif() { document.getElementById('notif-banner').className = ''; }
 
 // ════════════════════════════════════════════════════════
-// CALCULATIONS: P&L / STATS
+// CALCULATIONS: P&L / STATS  [PHASE 2: TypeScript Hybrid]
 // ════════════════════════════════════════════════════════
+// These functions now use TypeScript when available (window.tsBridge)
+// Falls back to vanilla JS implementation for safety
+
 function calcPnL(t) {
+  // Use TypeScript if available
+  if (window.tsBridge && window.tsBridge.calculatePnL) {
+    try {
+      // Convert old format to TypeScript format
+      const trade = {
+        id: t.id || 'temp',
+        direction: t.dir || t.direction || 'LONG',
+        entryPrice: parseFloat(t.entry) || 0,
+        exitPrice: parseFloat(t.exit) || 0,
+        sl: parseFloat(t.sl) || 0,
+        tp: parseFloat(t.tp) || 0,
+        size: parseFloat(t.lots) || 0,
+        date: t.date || dk(),
+        status: t.status || (t.exit ? 'closed' : 'open')
+      };
+      return window.tsBridge.calculatePnL(trade);
+    } catch (e) {
+      console.warn('[TS] calcPnL fallback:', e.message);
+    }
+  }
+  // Vanilla JS fallback
   if (!t.exit || !t.entry || !t.lots) return 0;
   const d = t.dir === 'LONG' ? 1 : -1;
   return (parseFloat(t.exit) - parseFloat(t.entry)) * d * parseFloat(t.lots) * 100;
 }
-function calcR(t) { const p=calcPnL(t),r=S.account*S.risk/100; return r>0?p/r:0; }
+
+function calcR(t) {
+  // Use TypeScript if available
+  if (window.tsBridge && window.tsBridge.calculateR) {
+    try {
+      const trade = {
+        id: t.id || 'temp',
+        direction: t.dir || t.direction || 'LONG',
+        entryPrice: parseFloat(t.entry) || 0,
+        exitPrice: parseFloat(t.exit) || 0,
+        sl: parseFloat(t.sl) || 0,
+        tp: parseFloat(t.tp) || 0,
+        size: parseFloat(t.lots) || 0,
+        date: t.date || dk(),
+        status: t.status || (t.exit ? 'closed' : 'open')
+      };
+      return window.tsBridge.calculateR(trade, S.account, S.risk);
+    } catch (e) {
+      console.warn('[TS] calcR fallback:', e.message);
+    }
+  }
+  // Vanilla JS fallback
+  const p = calcPnL(t), r = S.account * S.risk / 100;
+  return r > 0 ? p / r : 0;
+}
+
 function getStats() {
+  // Use TypeScript if available and trades exist
+  if (window.tsBridge && window.tsBridge.getTradingStatistics && trades.length > 0) {
+    try {
+      const tsTrades = trades.map((t, idx) => ({
+        id: t.id || `trade-${idx}-${Date.now()}`,
+        direction: t.dir || t.direction || 'LONG',
+        entryPrice: parseFloat(t.entry) || 0,
+        exitPrice: parseFloat(t.exit) || 0,
+        sl: parseFloat(t.sl) || 0,
+        tp: parseFloat(t.tp) || 0,
+        size: parseFloat(t.lots) || 0.1,
+        date: t.date || dk(),
+        status: t.status || (t.exit ? 'closed' : 'open'),
+        pnl: t.pnl || calcPnL(t),
+        outcome: t.outcome
+      }));
+      
+      const stats = window.tsBridge.getTradingStatistics(tsTrades);
+      
+      // Map TypeScript format back to vanilla format
+      return {
+        tot: stats.totalTrades,
+        wins: stats.wins,
+        losses: stats.losses,
+        wr: stats.winRate,
+        avgR: stats.avgR,
+        totPnl: stats.totalPnL,
+        best: stats.bestTrade,
+        worst: stats.worstTrade,
+        cw: stats.consecutiveWins,
+        cl: stats.consecutiveLosses
+      };
+    } catch (e) {
+      console.warn('[TS] getStats fallback:', e.message);
+    }
+  }
+  // Vanilla JS fallback
   if (!trades.length) return {tot:0,wins:0,losses:0,wr:0,avgR:0,totPnl:0,best:0,worst:0,cw:0,cl:0};
   let wins=0,losses=0,totPnl=0,best=-9999,worst=9999,cw=0,cl=0,maxCW=0,maxCL=0;
   trades.forEach(t=>{
@@ -2934,9 +3020,59 @@ function getStats() {
   });
   return {tot:trades.length,wins,losses,wr:wins/trades.length*100,avgR:trades.reduce((a,t)=>a+calcR(t),0)/trades.length,totPnl,best,worst,cw:maxCW,cl:maxCL};
 }
-function todayTrades(){const d=dk();return trades.filter(t=>t.date===d);}
-function todayPnL(){return todayTrades().reduce((a,t)=>a+calcPnL(t),0);}
-function totalPnL(){return trades.reduce((a,t)=>a+calcPnL(t),0);}
+
+function todayTrades() {
+  const d = dk();
+  return trades.filter(t => t.date === d);
+}
+
+function todayPnL() {
+  // Use TypeScript if available
+  if (window.tsBridge && window.tsBridge.calculateTodayPnL) {
+    try {
+      const tsTrades = trades.map((t, idx) => ({
+        id: t.id || `trade-${idx}`,
+        direction: t.dir || t.direction || 'LONG',
+        entryPrice: parseFloat(t.entry) || 0,
+        exitPrice: parseFloat(t.exit) || 0,
+        sl: parseFloat(t.sl) || 0,
+        tp: parseFloat(t.tp) || 0,
+        size: parseFloat(t.lots) || 0,
+        date: t.date || dk(),
+        status: t.status || (t.exit ? 'closed' : 'open')
+      }));
+      return window.tsBridge.calculateTodayPnL(tsTrades);
+    } catch (e) {
+      console.warn('[TS] todayPnL fallback:', e.message);
+    }
+  }
+  // Vanilla JS fallback
+  return todayTrades().reduce((a,t) => a + calcPnL(t), 0);
+}
+
+function totalPnL() {
+  // Use TypeScript if available
+  if (window.tsBridge && window.tsBridge.calculateTotalPnL) {
+    try {
+      const tsTrades = trades.map((t, idx) => ({
+        id: t.id || `trade-${idx}`,
+        direction: t.dir || t.direction || 'LONG',
+        entryPrice: parseFloat(t.entry) || 0,
+        exitPrice: parseFloat(t.exit) || 0,
+        sl: parseFloat(t.sl) || 0,
+        tp: parseFloat(t.tp) || 0,
+        size: parseFloat(t.lots) || 0,
+        date: t.date || dk(),
+        status: t.status || (t.exit ? 'closed' : 'open')
+      }));
+      return window.tsBridge.calculateTotalPnL(tsTrades);
+    } catch (e) {
+      console.warn('[TS] totalPnL fallback:', e.message);
+    }
+  }
+  // Vanilla JS fallback
+  return trades.reduce((a,t) => a + calcPnL(t), 0);
+}
 
 // ════════════════════════════════════════════════════════
 // TAB NAVIGATION
