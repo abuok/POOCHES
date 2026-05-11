@@ -61,15 +61,34 @@ a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
 .nbadge{position:absolute;top:4px;right:4px;width:7px;height:7px;background:var(--green);border-radius:50%;display:none}
 .nbadge.on{display:block}
 .sep{width:32px;height:1px;background:var(--br);margin:4px 0}
+.sidebar-spacer{height:30px}
+.sidebar-spacer-flex{flex:1}
+.sizer-section{margin-top:20px;border-top:2px solid var(--br);padding-top:20px}
+.pt-large{font-size:14px;margin-bottom:12px}
 
 /* ── MAIN ─────────────────────────────────────────── */
 #main{position:fixed;top:52px;left:56px;right:320px;bottom:0;overflow:hidden}
+.hidden{display:none!important}
+.lp-section-label-spaced{margin-top:4px}
+.tag-live{color:var(--green);font-size:8px}
+.inp-readonly{background:var(--bg4);color:var(--gold)}
+.inp-select{background:var(--bg4)}
+.btn-full{width:100%}
+.fg-end{justify-content:flex-end}
+.advice-box{margin-top:10px}
+.text-muted{color:var(--tx3)}
+.text-small{font-size:10px}
 .pnl{display:none;height:100%;overflow-y:auto;padding:20px 22px 32px;animation:fadeIn .15s ease}
 .pnl.on{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
 /* ── COMMON ──────────────────────────────────────── */
 .pt{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.16em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.scanner-box{margin-bottom:16px;padding:12px;background:var(--bg3);border:1px solid var(--br);border-radius:6px}
+.scanner-label{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.scanner-select-row{display:flex;align-items:center;gap:12px}
+.scanner-select{flex:1}
+.scanner-desc{font-size:9px;color:var(--tx2);max-width:200px}
 .pt span{color:var(--tx3);font-weight:400}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
@@ -124,6 +143,7 @@ hr.div{border:none;border-top:1px solid var(--br);margin:14px 0}
 /* ── STRATEGY DASHBOARD ───────────────────────────── */
 #strategy-dashboard{background:var(--bg3);border:1px solid var(--br2);border-radius:8px;padding:20px;margin-bottom:16px}
 .strategy-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.strategy-header-spaced{margin-top:24px}
 .strategy-title{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--gold);letter-spacing:.12em;text-transform:uppercase}
 .strategy-controls{display:flex;gap:10px}
 .strategy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:20px}
@@ -226,6 +246,7 @@ hr.div{border:none;border-top:1px solid var(--br);margin:14px 0}
 @keyframes pglow{0%,100%{box-shadow:0 0 0 0 rgba(0,201,122,.3)}50%{box-shadow:0 0 0 10px rgba(0,201,122,0)}}
 #sig-n{font-family:var(--mono);font-size:30px;font-weight:700;line-height:1;margin-bottom:3px}
 #sig-l{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.sig-label-amber{color:var(--amber)}
 #sig-a{font-size:12px;margin-top:7px;color:var(--tx2)}
 #sig-rst{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;background:var(--bg4);border:1px solid var(--br);color:var(--tx3);padding:4px 10px;border-radius:3px;cursor:pointer;margin-top:8px}
 #sig-rst:hover{border-color:var(--br2);color:var(--tx)}
@@ -373,28 +394,28 @@ table.jt tr.tw td{background:rgba(0,201,122,.04)}table.jt tr.tl td{background:rg
 <nav id="sidebar">
   <button class="nb on" id="nb-cockpit" onclick="go(&#39;cockpit&#39;)"><div class="ni">⚡</div><div class="nl">Cockpit</div></button>
   
-  <div style="height:30px"></div>
-  
+  <div class="sidebar-spacer"></div>
+
   <button class="nb" id="nb-strategy" onclick="go(&#39;strategy&#39;)"><div class="ni">📊</div><div class="nl">Strategy</div><div class="nbadge on" id="bd-strategy"></div></button>
-  
-  <div style="height:30px"></div>
-  
-    
+
+  <div class="sidebar-spacer"></div>
+
+
   <button class="nb" id="nb-scanner" onclick="go(&#39;scanner&#39;)"><div class="ni">🔍</div><div class="nl">Scanner+Sizer</div><div class="nbadge" id="bd-scanner"></div></button>
-  
-  <div style="height:30px"></div>
-  
+
+  <div class="sidebar-spacer"></div>
+
   <button class="nb" id="nb-journal" onclick="go(&#39;journal&#39;)"><div class="ni">📋</div><div class="nl">Journal</div></button>
-  
-  <div style="height:30px"></div>
-  
+
+  <div class="sidebar-spacer"></div>
+
   <button class="nb" id="nb-prop" onclick="go(&#39;prop&#39;)"><div class="ni">🏦</div><div class="nl">Prop</div><div class="nbadge" id="bd-prop"></div></button>
-  
-  <div style="height:30px"></div>
-  
+
+  <div class="sidebar-spacer"></div>
+
   <button class="nb" id="nb-coach" onclick="go(&#39;coach&#39;)"><div class="ni">🧠</div><div class="nl">Coach</div></button>
-  
-  <div style="flex:1"></div>
+
+  <div class="sidebar-spacer-flex"></div>
   
   <button class="nb" id="nb-settings" onclick="go(&#39;settings&#39;)"><div class="ni">⚙️</div><div class="nl">Settings</div></button>
 </nav>
@@ -590,7 +611,7 @@ table.jt tr.tw td{background:rgba(0,201,122,.04)}table.jt tr.tl td{background:rg
       </div></div>
     
     <!-- Pattern Recognition Section -->
-    <div class="strategy-header" style="margin-top:24px">
+    <div class="strategy-header strategy-header-spaced">
       <div class="strategy-title">🔍 PATTERN RECOGNITION</div>
       <div class="strategy-controls">
         <button class="btn gl" onclick="refreshPatterns()">⟳ REFRESH</button>
@@ -772,15 +793,21 @@ table.jt tr.tw td{background:rgba(0,201,122,.04)}table.jt tr.tl td{background:rg
   <div class="pt">🔍 8-Condition Technical Strategy <span>— H1/M15 • 67.8% WR</span></div>
 
   <!-- STRATEGY SELECTOR -->
-  <div style="margin-bottom:16px;padding:12px;background:var(--bg3);border:1px solid var(--br);border-radius:6px">
-    <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">📊 ACTIVE STRATEGY</div>
-    <div style="display:flex;align-items:center;gap:12px">
-      <select class="inp" id="scanner-strategy" style="flex:1" onchange="updateScannerStrategy()"><option value="">Select Strategy</option><option value="scanner_8_condition">8-Condition Technical Strategy (67.8% WR)</option><option value="bos_reversal">BOS Reversal Strategy (63.3% WR)</option><option value="session_volatility">Session Volatility Breakout (58% WR)</option><option value="liquidity_sweep">Liquidity Sweep Reversal (52% WR)</option></select>
-      <div id="scanner-strategy-info" style="font-size:9px;color:var(--tx2);max-width:200px">
-    <strong>8-Condition Technical Strategy</strong><br>
-    H1/M15 • trend following<br>
-    67.8% WR • 1.85R avg
-  </div>
+  <div class="scanner-box">
+    <div class="scanner-label">📊 ACTIVE STRATEGY</div>
+    <div class="scanner-select-row">
+      <select id="scanner-strategy" class="scanner-select" onchange="updateScannerStrategy()">
+        <option value="">Select Strategy</option>
+        <option value="scanner_8_condition">8-Condition Technical Strategy (67.8% WR)</option>
+        <option value="bos_reversal">BOS Reversal Strategy (63.3% WR)</option>
+        <option value="session_volatility">Session Volatility Breakout (58% WR)</option>
+        <option value="liquidity_sweep">Liquidity Sweep Reversal (52% WR)</option>
+      </select>
+      <div id="scanner-strategy-info" class="scanner-info">
+        <strong>8-Condition Technical Strategy</strong><br>
+        H1/M15 • trend following<br>
+        67.8% WR • 1.85R avg
+      </div>
     </div>
   </div>
 
@@ -799,24 +826,24 @@ table.jt tr.tw td{background:rgba(0,201,122,.04)}table.jt tr.tl td{background:rg
     <button class="dtb on long" id="dtb-long" onclick="setDir(&#39;LONG&#39;)">▲ LONG</button>
     <button class="dtb short" id="dtb-short" onclick="setDir(&#39;SHORT&#39;)">▼ SHORT</button>
   </div>
-  <div id="scan-guard" class="box am" style="display:none"></div>
+  <div id="scan-guard" class="box am hidden"></div>
   <div class="cgrid" id="cgrid"><div class="cc ck"><div class="cn">CONDITION 1 OF 8 <span class="auto-badge auto">AUTO</span></div><div class="ctf h1">H1</div><div class="ctitle">EMA50 &gt; EMA200 on H1</div><div class="cdetail">Macro bull trend confirmed. Check before session opens.</div><div class="clive ok">✓ Condition true on live data</div></div><div class="cc"><div class="cn">CONDITION 2 OF 8 <span class="auto-badge auto">AUTO</span></div><div class="ctf h1">H1</div><div class="ctitle">Price &gt; EMA20 on H1</div><div class="cdetail">H1 close above EMA20. Price in upper half of trend structure.</div><div class="clive fail">✗ Not met on live data</div></div><div class="cc ck"><div class="cn">CONDITION 3 OF 8 <span class="auto-badge auto">AUTO</span></div><div class="ctf h1">H1</div><div class="ctitle">H1 RSI between 30 and 68</div><div class="cdetail">Not overbought on H1. RSI above 68 = skip all long setups today.</div><div class="clive ok">✓ Condition true on live data</div></div><div class="cc"><div class="cn">CONDITION 4 OF 8 <span class="auto-badge auto">AUTO</span></div><div class="ctf m15">M15</div><div class="ctitle">EMA8 &gt; EMA21 on M15</div><div class="cdetail">Short-term M15 momentum bullish. If below — pullback still running.</div><div class="clive fail">✗ Not met on live data</div></div><div class="cc"><div class="cn">CONDITION 5 OF 8 <span class="auto-badge auto">AUTO</span></div><div class="ctf m15">M15</div><div class="ctitle">M15 RSI crossed above 48</div><div class="cdetail">RSI was below 50 last bar, now ≥ 48. This IS the trigger.</div><div class="clive fail">✗ Not met on live data</div></div><div class="cc ck"><div class="cn">CONDITION 6 OF 8 <span class="auto-badge auto">AUTO</span></div><div class="ctf m15">M15</div><div class="ctitle">M15 RSI is below 65</div><div class="cdetail">Not entering extended momentum. RSI 65+ = wait for dip first.</div><div class="clive ok">✓ Condition true on live data</div></div><div class="cc ck"><div class="cn">CONDITION 7 OF 8 <span class="auto-badge auto">AUTO</span></div><div class="ctf m15">M15</div><div class="ctitle">Bull candle + Close &gt; EMA8</div><div class="cdetail">Current M15 candle green and close above EMA8. Strong body preferred.</div><div class="clive ok">✓ Condition true on live data</div></div><div class="cc"><div class="cn">CONDITION 8 OF 8 <span class="auto-badge auto">AUTO</span></div><div class="ctf vol">VOL</div><div class="ctitle">Volume &gt; 1.3× 20-bar average</div><div class="cdetail">Tick volume exceeds 1.3× 20-bar avg. Institutional confirmation.</div></div></div>
   <div id="sig-box" class="part">
     <div id="sig-n">4 / 8</div>
-    <div id="sig-l" style="color: var(--amber);">PARTIAL — WAIT FOR ALL 8</div>
+    <div id="sig-l" class="sig-label-amber">PARTIAL — WAIT FOR ALL 8</div>
     <div id="sig-a">4 more needed. Do NOT trade until all 8 confirmed.</div>
     <button id="sig-rst" onclick="resetScan()">↺ RESET MANUAL OVERRIDES</button>
   </div>
   
   <!-- POSITION SIZER (Merged) -->
-  <div style="margin-top:20px;border-top:2px solid var(--br);padding-top:20px">
-    <div class="pt" style="font-size:14px;margin-bottom:12px">📐 POSITION SIZER <span>— CALCULATE BEFORE EVERY TRADE</span></div>
+  <div class="sizer-section">
+    <div class="pt pt-large">📐 POSITION SIZER <span>— CALCULATE BEFORE EVERY TRADE</span></div>
     <div class="sform">
       <div class="srow">
         <div class="fg"><label class="lbl">Account Balance ($)</label><input class="inp" id="sz-acc" type="number" placeholder="0" oninput="doCalc()"></div>
         <div class="fg"><label class="lbl">Risk % per Trade</label><input class="inp" id="sz-rsk" type="number" placeholder="1.0" step="0.1" oninput="doCalc()"></div>
-        <div class="fg"><label class="lbl">ATR14 M15 ($) <span id="sz-atr-hint" style="color:var(--green);font-size:8px">📡 LIVE FEED</span></label><input class="inp" id="sz-atr" type="number" placeholder="5.10" step="0.01" oninput="doCalc()"></div>
-        <div class="fg"><label class="lbl">Entry Price ($) <span id="sz-ent-hint" style="color:var(--green);font-size:8px">📡 LIVE PRICE</span></label><input class="inp" id="sz-ent" type="number" placeholder="4715.00" step="0.01" oninput="doCalc()"></div>
+        <div class="fg"><label class="lbl">ATR14 M15 ($) <span id="sz-atr-hint" class="tag-live">📡 LIVE FEED</span></label><input class="inp" id="sz-atr" type="number" placeholder="5.10" step="0.01" oninput="doCalc()"></div>
+        <div class="fg"><label class="lbl">Entry Price ($) <span id="sz-ent-hint" class="tag-live">📡 LIVE PRICE</span></label><input class="inp" id="sz-ent" type="number" placeholder="4715.00" step="0.01" oninput="doCalc()"></div>
       </div>
       <div class="srow">
         <div class="fg"><label class="lbl">Direction</label><select class="inp" id="sz-dir" onchange="doCalc()"><option value="LONG">▲ LONG</option><option value="SHORT">▼ SHORT</option></select></div>
@@ -835,25 +862,25 @@ table.jt tr.tw td{background:rgba(0,201,122,.04)}table.jt tr.tl td{background:rg
       <div class="ri"><div class="rl">TP1 Gain</div><div class="rv gn" id="r-tp1g">+$36.00</div></div>
       <div class="ri"><div class="rl">TP2 Gain</div><div class="rv gn" id="r-tp2g">+$60.00</div></div>
     </div>
-    <div class="box gn" id="sz-advice" style="margin-top:10px">Lot size: <strong>0.0301</strong> | Risk: <strong>$24.00</strong> (0.4%). SL: $4659.25 | TP1: $4679.20 | TP2: $4687.18. <span style="color:var(--tx3);font-size:10px">(Live price: $4667.23)</span></div>
+    <div class="box gn advice-box">Lot size: <strong>0.0301</strong> | Risk: <strong>$24.00</strong> (0.4%). SL: $4659.25 | TP1: $4679.20 | TP2: $4687.18. <span class="text-muted text-small">(Live price: $4667.23)</span></div>
   </div>
 </div>
 
 <!-- SIZER panel removed - merged into scanner -->
-<div class="pnl" id="pnl-sizer" style="display:none">
+<div class="pnl hidden" id="pnl-sizer">
   <div class="pt">📐 POSITION SIZER <span>— CALCULATE BEFORE EVERY TRADE</span></div>
   <div class="sform">
     <div class="srow">
-      <div class="fg"><label class="lbl">Account Balance ($) <span style="color:var(--green);font-size:8px">🔄 LIVE</span></label><input class="inp" id="sz-acc" type="number" placeholder="0" readonly="" style="background:var(--bg4);color:var(--gold)"></div>
-      <div class="fg"><label class="lbl">Risk % per Trade <span style="color:var(--green);font-size:8px">⚙️ SETTINGS</span></label><input class="inp" id="sz-rsk" type="number" placeholder="1.0" step="0.1" readonly="" style="background:var(--bg4);color:var(--gold)"></div>
-      <div class="fg"><label class="lbl">ATR14 on M15 ($) <span id="sz-atr-hint" style="color:var(--green);font-size:8px">📡 LIVE</span></label><input class="inp" id="sz-atr" type="number" placeholder="5.10" step="0.01" readonly="" style="background:var(--bg4);color:var(--gold)"></div>
-      <div class="fg"><label class="lbl">Entry Price ($) <span id="sz-ent-hint" style="color:var(--green);font-size:8px">📡 LIVE</span></label><input class="inp" id="sz-ent" type="number" placeholder="4715.00" step="0.01" readonly="" style="background:var(--bg4);color:var(--gold)"></div>
+      <div class="fg"><label class="lbl">Account Balance ($) <span class="tag-live">🔄 LIVE</span></label><input class="inp inp-readonly" id="sz-acc" type="number" placeholder="0" readonly=""></div>
+      <div class="fg"><label class="lbl">Risk % per Trade <span class="tag-live">⚙️ SETTINGS</span></label><input class="inp inp-readonly" id="sz-rsk" type="number" placeholder="1.0" step="0.1" readonly=""></div>
+      <div class="fg"><label class="lbl">ATR14 on M15 ($) <span id="sz-atr-hint" class="tag-live">📡 LIVE</span></label><input class="inp" id="sz-atr" type="number" placeholder="5.10" step="0.01" readonly=""></div>
+      <div class="fg"><label class="lbl">Entry Price ($) <span id="sz-ent-hint" class="tag-live">📡 LIVE</span></label><input class="inp" id="sz-ent" type="number" placeholder="4715.00" step="0.01" readonly=""></div>
     </div>
     <div class="srow">
-      <div class="fg"><label class="lbl">Direction <span style="color:var(--green);font-size:8px">📊 ANALYSIS</span></label><select class="inp" id="sz-dir" onchange="doCalc()" style="background:var(--bg4)"><option value="LONG">▲ LONG</option><option value="SHORT">▼ SHORT</option></select></div>
-      <div class="fg"><label class="lbl">Session <span style="color:var(--green);font-size:8px">🕐 AUTO</span></label><select class="inp" id="sz-sess" onchange="doCalc()" style="background:var(--bg4)"><option value="london">London (10-16 EAT)</option><option value="ny">NY Open (19-21 EAT)</option><option value="overlap">Overlap (16-19 EAT)</option></select></div>
-      <div class="fg"><label class="lbl">SL Multiplier <span style="color:var(--green);font-size:8px">⚙️ SETTINGS</span></label><input class="inp" id="sz-slm" type="number" value="1.2" step="0.1" min="0.5" max="3" oninput="doCalc()"></div>
-      <div class="fg" style="justify-content:flex-end"><label class="lbl">&nbsp;</label><button class="btn gl" style="width:100%" onclick="doCalc()">⟳ AUTO-CALCULATE</button></div>
+      <div class="fg"><label class="lbl">Direction <span class="tag-live">📊 ANALYSIS</span></label><select class="inp inp-select" id="sz-dir" onchange="doCalc()"><option value="LONG">▲ LONG</option><option value="SHORT">▼ SHORT</option></select></div>
+      <div class="fg"><label class="lbl">Session <span class="tag-live">🕐 AUTO</span></label><select class="inp inp-select" id="sz-sess" onchange="doCalc()"><option value="london">London (10-16 EAT)</option><option value="ny">NY Open (19-21 EAT)</option><option value="overlap">Overlap (16-19 EAT)</option></select></div>
+      <div class="fg"><label class="lbl">SL Multiplier <span class="tag-live">⚙️ SETTINGS</span></label><input class="inp" id="sz-slm" type="number" value="1.2" step="0.1" min="0.5" max="3" oninput="doCalc()"></div>
+      <div class="fg fg-end"><label class="lbl">&nbsp;</label><button class="btn gl btn-full" onclick="doCalc()">⟳ AUTO-CALCULATE</button></div>
     </div>
   </div>
   <div class="res-grid">
