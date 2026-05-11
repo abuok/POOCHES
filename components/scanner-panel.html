@@ -1,0 +1,101 @@
+<!-- SCANNER PANEL COMPONENT -->
+<div class="pnl" id="pnl-scanner">
+  <div class="pt">🔍 SCANNER <span>— DYNAMIC STRATEGY CONDITIONS</span></div>
+  
+  <!-- Strategy Selection -->
+  <div class="strategy-selection">
+    <div class="fg">
+      <label class="lbl" for="scanner-strategy">SELECT STRATEGY</label>
+      <select class="inp" id="scanner-strategy" onchange="updateScannerStrategy()" aria-label="Select trading strategy">
+        <option value="scanner_8_condition">8-Condition Technical Strategy</option>
+        <option value="bos_reversal">BOS Reversal Strategy</option>
+        <option value="session_volatility">Session Volatility Breakout</option>
+        <option value="liquidity_sweep">Liquidity Sweep Strategy</option>
+      </select>
+    </div>
+  </div>
+  
+  <!-- Strategy Info -->
+  <div id="scanner-strategy-info" class="strategy-info">
+    <strong>8-Condition Technical Strategy</strong><br>
+    H1/M15 • trend_following<br>
+    67.8% WR • 1.85R avg
+  </div>
+  
+  <!-- Direction Selection -->
+  <div class="direction-buttons">
+    <button class="btn gl" id="btn-long" onclick="setDir('LONG')" aria-label="Select LONG direction">▲ LONG</button>
+    <button class="btn gy" id="btn-short" onclick="setDir('SHORT')" aria-label="Select SHORT direction">▼ SHORT</button>
+  </div>
+  
+  <!-- Condition Grid -->
+  <div class="condition-grid" id="cgrid">
+    <!-- Dynamic condition cards will be rendered here -->
+  </div>
+  
+  <!-- Signal Box -->
+  <div id="sig-box" class="signal-box">
+    <div class="signal-header">
+      <div id="sig-n" class="signal-count">0 / 8</div>
+      <div id="sig-l" class="signal-label">CONDITIONS MET</div>
+    </div>
+    <div id="sig-a" class="signal-description">Click each condition as it becomes true on your MT5 chart.</div>
+  </div>
+  
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <button class="btn gy" onclick="resetScan()" aria-label="Reset scanner conditions">↺ RESET SCAN</button>
+    <button class="btn gn" id="bd-scanner" onclick="executeScan()" aria-label="Execute trade">▶ EXECUTE TRADE</button>
+  </div>
+  
+  <!-- Live Panel -->
+  <div id="live-panel" class="live-panel">
+    <div class="pt">📡 LIVE INDICATORS <span>— REAL-TIME DATA</span></div>
+    <div class="live-indicators">
+      <div class="indicator-row">
+        <div class="live-indicator">
+          <div class="live-label">H1 EMA50/200</div>
+          <div class="live-value" id="h1-ema-stack">—</div>
+          <div class="live-status">Bull: EMA50 > EMA200</div>
+        </div>
+        <div class="live-indicator">
+          <div class="live-label">H1 PRICE/EMA20</div>
+          <div class="live-value" id="h1-price-ema20">—</div>
+          <div class="live-status">Above EMA20</div>
+        </div>
+        <div class="live-indicator">
+          <div class="live-label">H1 RSI</div>
+          <div class="live-value" id="h1-rsi">—</div>
+          <div class="live-status">30-68 range</div>
+        </div>
+        <div class="live-indicator">
+          <div class="live-label">M15 EMA8/21</div>
+          <div class="live-value" id="m15-ema-stack">—</div>
+          <div class="live-status">Bull: EMA8 > EMA21</div>
+        </div>
+      </div>
+      <div class="indicator-row">
+        <div class="live-indicator">
+          <div class="live-label">M15 RSI CROSS</div>
+          <div class="live-value" id="m15-rsi-cross">—</div>
+          <div class="live-status">Cross 48/52</div>
+        </div>
+        <div class="live-indicator">
+          <div class="live-label">M15 RSI LEVEL</div>
+          <div class="live-value" id="m15-rsi-level">—</div>
+          <div class="live-status">< 65 (LONG) / > 35 (SHORT)</div>
+        </div>
+        <div class="live-indicator">
+          <div class="live-label">M15 CANDLE</div>
+          <div class="live-value" id="m15-candle">—</div>
+          <div class="live-status">Bull + Above EMA8</div>
+        </div>
+        <div class="live-indicator">
+          <div class="live-label">VOLUME SPIKE</div>
+          <div class="live-value" id="volume-spike">—</div>
+          <div class="live-status">> 1.3x avg</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

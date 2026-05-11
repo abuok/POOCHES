@@ -1,0 +1,32 @@
+{
+  "name": "gold-trading-system",
+  "version": "1.0.0",
+  "description": "Gold Trading Analysis System with TypeScript and Testing",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:python": "pytest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.5.0",
+    "jest-environment-jsdom": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {},
+  "keywords": [
+    "trading",
+    "gold",
+    "xauusd",
+    "analysis",
+    "typescript"
+  ],
+  "author": "Trading System Developer",
+  "license": "MIT"
+}
