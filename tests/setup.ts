@@ -4,7 +4,7 @@
  */
 
 // Mock Chart.js
-global.Chart = jest.fn().mockImplementation(() => ({
+(global as any).Chart = jest.fn().mockImplementation(() => ({
   destroy: jest.fn(),
   update: jest.fn(),
   resize: jest.fn(),
