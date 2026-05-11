@@ -155,6 +155,16 @@ export class StateManager {
     this.saveState();
   }
 
+  public removeTrade(tradeId: string): void {
+    const index = this.state.todayTrades.findIndex((t: TradeEntry) => t.id === tradeId);
+    if (index >= 0) {
+      this.state.todayTrades.splice(index, 1);
+      this.calculateTodayPnL();
+      this.notifyListeners();
+      this.saveState();
+    }
+  }
+
   public updateFeedStatus(feedStatus: FeedStatus): void {
     this.state.feedStatus = feedStatus;
     this.notifyListeners();

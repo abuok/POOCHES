@@ -2249,7 +2249,9 @@ function updateScannerStrategy() {
 
 // Enhanced journal logging with strategy integration
 function logTrade() {
+  // Create trade object (Phase 3: TypeScript Hybrid)
   const trade = {
+    id: 'trade-' + Date.now(),
     date: document.getElementById('jf-date').value,
     time: document.getElementById('jf-time').value,
     session: document.getElementById('jf-sess').value,
@@ -2271,8 +2273,43 @@ function logTrade() {
     timestamp: Date.now()
   };
   
-  // Add to trades array
-  trades.push(trade);
+  // Calculate P&L for account update
+  const pnl = calcPnL(trade);
+  
+  // Phase 3: Use TypeScript StateManager if available
+  let tsAdded = false;
+  if (window.tsBridge && window.tsBridge.addTrade && window.TS_INTEGRATION && window.TS_INTEGRATION.stateManager) {
+    try {
+      // Convert to TypeScript format
+      const tsTrade = {
+        id: trade.id,
+        direction: trade.direction,
+        entryPrice: trade.entry,
+        exitPrice: trade.exit,
+        sl: trade.sl,
+        tp: trade.tp1, // Use TP1 as primary
+        size: trade.lots,
+        date: trade.date,
+        status: trade.exit ? 'closed' : 'open',
+        pnl: pnl,
+        session: trade.session,
+        setup: trade.strategy,
+        notes: trade.notes
+      };
+      
+      window.TS_INTEGRATION.stateManager.addTrade(tsTrade);
+      tsAdded = true;
+      console.log('[TS] Trade added via StateManager');
+    } catch (e) {
+      console.warn('[TS] StateManager addTrade failed, using vanilla JS:', e.message);
+    }
+  }
+  
+  // Vanilla JS fallback: Add to trades array if TypeScript didn't handle it
+  if (!tsAdded) {
+    trades.push(trade);
+    console.log('[JS] Trade added via vanilla JS');
+  }
   
   // Update strategy performance if strategy was used
   if (trade.strategy) {
@@ -2280,7 +2317,6 @@ function logTrade() {
   }
   
   // Update account balance after trade - add P&L to current balance
-  const pnl = calcPnL(trade);
   S.account = S.account + pnl;
   
   // Update prop accounts
@@ -4067,7 +4103,32 @@ function renderRiskRewardChart(tradeData) {
   });
 }
 
-function delTrade(i){if(!confirm('Delete this trade?'))return;trades.splice(i,1);saveAll();renderJournal();tickHeader();syncAllAccountDisplays();toast('Deleted.','');}
+function delTrade(i) {
+  if(!confirm('Delete this trade?')) return;
+  
+  // Phase 3: Use TypeScript StateManager if available
+  let tsRemoved = false;
+  if (window.TS_INTEGRATION && window.TS_INTEGRATION.stateManager && trades[i]) {
+    try {
+      const trade = trades[i];
+      const tradeId = trade.id || `trade-${i}`;
+      window.TS_INTEGRATION.stateManager.removeTrade(tradeId);
+      tsRemoved = true;
+      console.log('[TS] Trade removed via StateManager:', tradeId);
+    } catch (e) {
+      console.warn('[TS] StateManager removeTrade failed:', e.message);
+    }
+  }
+  
+  // Vanilla JS fallback: Remove from trades array
+  trades.splice(i, 1);
+  
+  saveAll();
+  renderJournal();
+  tickHeader();
+  syncAllAccountDisplays();
+  toast('Deleted.', '');
+}
 
 // ════════════════════════════════════════════════════════
 // PROP TRACKER
