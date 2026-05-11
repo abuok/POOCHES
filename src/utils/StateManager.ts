@@ -5,13 +5,13 @@
  */
 
 import { 
-  DashboardState, 
   TradeEntry, 
   TradeStatistics, 
   Alert, 
   FeedStatus,
   RiskStatus 
 } from '../../types/trading';
+import { DashboardState } from '../../types/dashboard';
 
 export class StateManager {
   private static instance: StateManager;
@@ -113,7 +113,7 @@ export class StateManager {
   }
 
   public updateTrade(updatedTrade: TradeEntry): void {
-    const index = this.state.todayTrades.findIndex(t => t.id === updatedTrade.id);
+    const index = this.state.todayTrades.findIndex((t: TradeEntry) => t.id === updatedTrade.id);
     if (index >= 0) {
       this.state.todayTrades[index] = updatedTrade;
       this.calculateTodayPnL();
@@ -123,7 +123,7 @@ export class StateManager {
   }
 
   public closeTrade(tradeId: string, exitPrice: number): void {
-    const trade = this.state.todayTrades.find(t => t.id === tradeId);
+    const trade = this.state.todayTrades.find((t: TradeEntry) => t.id === tradeId);
     if (!trade) {
       throw new Error(`Trade not found: ${tradeId}`);
     }
@@ -167,24 +167,24 @@ export class StateManager {
   }
 
   private calculateTodayPnL(): void {
-    this.state.todayPnL = this.state.todayTrades.reduce((total, trade) => {
+    this.state.todayPnL = this.state.todayTrades.reduce((total: number, trade: TradeEntry) => {
       return total + (trade.pnl || 0);
     }, 0);
   }
 
   public calculateStatistics(trades?: TradeEntry[]): TradeStatistics {
-    const targetTrades = trades || this.state.todayTrades.filter(t => t.status === 'closed');
+    const targetTrades = trades || this.state.todayTrades.filter((t: TradeEntry) => t.status === 'closed');
     
     if (targetTrades.length === 0) {
       return this.getDefaultStats();
     }
 
-    const wins = targetTrades.filter(t => (t.pnl || 0) > 0);
-    const losses = targetTrades.filter(t => (t.pnl || 0) < 0);
+    const wins = targetTrades.filter((t: TradeEntry) => (t.pnl || 0) > 0);
+    const losses = targetTrades.filter((t: TradeEntry) => (t.pnl || 0) < 0);
     
-    const totalPnL = targetTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-    const totalWins = wins.reduce((sum, t) => sum + (t.pnl || 0), 0);
-    const totalLosses = Math.abs(losses.reduce((sum, t) => sum + (t.pnl || 0), 0));
+    const totalPnL = targetTrades.reduce((sum: number, t: TradeEntry) => sum + (t.pnl || 0), 0);
+    const totalWins = wins.reduce((sum: number, t: TradeEntry) => sum + (t.pnl || 0), 0);
+    const totalLosses = Math.abs(losses.reduce((sum: number, t: TradeEntry) => sum + (t.pnl || 0), 0));
     
     const winRate = targetTrades.length > 0 ? (wins.length / targetTrades.length) * 100 : 0;
     const avgWin = wins.length > 0 ? totalWins / wins.length : 0;
@@ -206,9 +206,9 @@ export class StateManager {
   }
 
   private calculateAverageR(trades: TradeEntry[]): number {
-    const tradesWithR = trades.filter(t => t.r !== undefined);
+    const tradesWithR = trades.filter((t: TradeEntry) => t.r !== undefined);
     if (tradesWithR.length === 0) return 0;
-    const totalR = tradesWithR.reduce((sum, t) => sum + (t.r || 0), 0);
+    const totalR = tradesWithR.reduce((sum: number, t: TradeEntry) => sum + (t.r || 0), 0);
     return parseFloat((totalR / tradesWithR.length).toFixed(2));
   }
 
@@ -253,7 +253,7 @@ export class StateManager {
           ...this.state.feedStatus,
           lastUpdate: this.state.feedStatus.lastUpdate.toISOString(),
         },
-        alerts: this.state.alerts.map(alert => ({
+        alerts: this.state.alerts.map((alert: Alert) => ({
           ...alert,
           timestamp: alert.timestamp.toISOString(),
         })),

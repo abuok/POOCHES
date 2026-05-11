@@ -74,7 +74,10 @@ a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
 .inp-readonly{background:var(--bg4);color:var(--gold)}
 .inp-select{background:var(--bg4)}
 .btn-full{width:100%}
+.btn-row{display:flex;gap:10px}
+.btn-flex{flex:1}
 .fg-end{justify-content:flex-end}
+.rbf-green{background:var(--green)}
 .advice-box{margin-top:10px}
 .text-muted{color:var(--tx3)}
 .text-small{font-size:10px}
@@ -849,7 +852,7 @@ table.jt tr.tw td{background:rgba(0,201,122,.04)}table.jt tr.tl td{background:rg
         <div class="fg"><label class="lbl">Direction</label><select class="inp" id="sz-dir" onchange="doCalc()"><option value="LONG">▲ LONG</option><option value="SHORT">▼ SHORT</option></select></div>
         <div class="fg"><label class="lbl">Session</label><select class="inp" id="sz-sess" onchange="doCalc()"><option value="london">London (10-16 EAT)</option><option value="ny">NY Open (19-21 EAT)</option><option value="overlap">Overlap (16-19 EAT)</option></select></div>
         <div class="fg"><label class="lbl">SL Multiplier</label><input class="inp" id="sz-slm" type="number" value="1.2" step="0.1" min="0.5" max="3" oninput="doCalc()"></div>
-        <div class="fg" style="justify-content:flex-end"><label class="lbl">&nbsp;</label><button class="btn gl" style="width:100%" onclick="doCalc()">⟳ CALCULATE</button></div>
+        <div class="fg fg-end"><label class="lbl">&nbsp;</label><button class="btn gl btn-full" onclick="doCalc()">⟳ CALCULATE</button></div>
       </div>
     </div>
     <div class="res-grid">
@@ -895,12 +898,12 @@ table.jt tr.tw td{background:rgba(0,201,122,.04)}table.jt tr.tl td{background:rg
   </div>
   <div class="rbar-wrap">
     <div class="rbar-hd"><span>Risk vs daily personal stop</span><span id="r-pct-lbl">40.0% of daily stop</span></div>
-    <div class="rbar"><div class="rbf" id="rbf" style="width: 40%; background: var(--green);"></div></div>
+    <div class="rbar"><div class="rbf rbf-green" id="rbf" style="width: 40%;"></div></div>
   </div>
   <div class="box gl" id="sz-advice">Enter ATR and entry price to calculate your position size.</div>
-  <div style="display:flex;gap:10px">
-    <button class="btn gl" style="flex:1" onclick="logFromSizer()">✚ SEND TO JOURNAL</button>
-    <button class="btn gy" style="flex:1" onclick="copyMT5()">📋 COPY MT5 ORDER</button>
+  <div class="btn-row">
+    <button class="btn gl btn-flex" onclick="logFromSizer()">✚ SEND TO JOURNAL</button>
+    <button class="btn gy btn-flex" onclick="copyMT5()">📋 COPY MT5 ORDER</button>
   </div>
 </div>
 
@@ -7544,5 +7547,7 @@ document.addEventListener('keydown', e => {
 });
 </script>
 
+<!-- TypeScript Integration Adapter - Loads as enhancement layer -->
+<script type="module" src="./typescript-adapter.js"></script>
 
 </body></html>
