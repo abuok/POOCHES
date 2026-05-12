@@ -13,7 +13,7 @@ Your XAU/USD Trading System now has **automated CI/CD** via GitHub Actions. Ever
 
 ## 📋 Pipeline Stages
 
-```
+```text
 Push to GitHub
     │
     ├──► Lint & Type Check (TypeScript compilation)
@@ -38,7 +38,8 @@ Go to **GitHub Repo → Settings → Secrets and variables → Actions**
 Add these secrets based on your deployment method:
 
 #### Option A: SSH/SCP Deployment (Recommended for VPS)
-```
+
+```text
 SSH_PRIVATE_KEY    =  -----BEGIN OPENSSH PRIVATE KEY-----
                        (Your server private key)
                        -----END OPENSSH PRIVATE KEY-----
@@ -48,7 +49,8 @@ SERVER_USER        =  deploy        (SSH username)
 ```
 
 #### Option B: FTP Deployment (Shared Hosting)
-```
+
+```text
 FTP_SERVER         =  ftp.yourhost.com
 FTP_USERNAME       =  your_username
 FTP_PASSWORD       =  your_password
@@ -91,6 +93,7 @@ git push origin main
 ## 📊 Monitoring Deployments
 
 ### GitHub Actions Dashboard
+
 - Go to **GitHub Repo → Actions tab**
 - See real-time progress of each job
 - Green check = Success
@@ -122,6 +125,7 @@ git push origin main
 ```
 
 Or manually in GitHub:
+
 1. Go to **Actions tab**
 2. Find last successful workflow run
 3. Click **Re-run jobs**
@@ -164,6 +168,7 @@ git add . && git commit -m "feat: improve PnL calculation" && git push
 ## 🚨 Troubleshooting
 
 ### "Tests failing"
+
 ```bash
 # Run locally to debug
 npm test
@@ -171,6 +176,7 @@ npm test
 ```
 
 ### "TypeScript errors"
+
 ```bash
 # Check types locally
 npm run typecheck
@@ -178,13 +184,16 @@ npm run typecheck
 ```
 
 ### "Deployment failing"
+
 1. Check GitHub Secrets are set correctly
 2. Verify server credentials work manually:
+
 ```bash
 ssh -i ~/.ssh/deploy_key deploy@YOUR_SERVER_IP
 ```
 
 ### "Build artifacts not found"
+
 Ensure `dist/` is not in `.gitignore` (it shouldn't be)
 
 ---
