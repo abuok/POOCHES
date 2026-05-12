@@ -3804,67 +3804,606 @@ function tickHeader() {
 }
 
 // ════════════════════════════════════════════════════════
-// COCKPIT
+// REAL-TIME COCKPIT - LIVING TRADING ASSISTANT
 // ════════════════════════════════════════════════════════
-function updateCockpit() {
-  // Generate comprehensive assistant-style briefing for cockpit
-  const briefingContainer = document.getElementById('cockpit-briefing');
-  if (!briefingContainer) return;
+
+let cockpitState = {
+  lastUpdate: 0,
+  lastTradeCount: 0,
+  lastSignalCount: 0,
+  lastAccountBalance: 0,
+  lastFeedStatus: false,
+  lastScannerReady: false,
+  lastSession: null,
+  alerts: [],
+  personality: 'professional', // professional, urgent, cautious, celebratory
+  lastBriefing: ''
+};
+
+// Real-time event monitoring system
+class CockpitMonitor {
+  constructor() {
+    this.active = true;
+    this.updateInterval = null;
+    this.eventListeners = [];
+    this.lastState = { ...cockpitState };
+    this.init();
+  }
   
-  try {
-    const briefingContent = generateCockpitBriefing();
-    briefingContainer.innerHTML = briefingContent;
-  } catch (error) {
-    console.error('Error generating cockpit briefing:', error);
-    briefingContainer.innerHTML = '<div style="text-align:center;color:var(--red);padding:20px">⚠️ Briefing generation failed. Please refresh.</div>';
+  init() {
+    console.log('🧠 Cockpit Monitor: Starting real-time surveillance...');
+    
+    // Start continuous monitoring (every 2 seconds)
+    this.updateInterval = setInterval(() => this.performRealtimeCheck(), 2000);
+    
+    // Set up event listeners for immediate updates
+    this.setupEventListeners();
+    
+    // Initial update
+    setTimeout(() => this.performRealtimeCheck(), 500);
+  }
+  
+  setupEventListeners() {
+    // Monitor trades array changes
+    this.watchArray(window, 'trades', (newTrades) => {
+      if (newTrades.length !== this.lastState.lastTradeCount) {
+        this.triggerAlert('TRADE_UPDATE', `Trade activity detected: ${newTrades.length} total trades`);
+        this.lastState.lastTradeCount = newTrades.length;
+        this.updateCockpitNow();
+      }
+    });
+    
+    // Monitor account balance changes
+    this.watchObject(window, 'S', (settings) => {
+      if (settings.account !== this.lastState.lastAccountBalance) {
+        const change = settings.account - this.lastState.lastAccountBalance;
+        this.triggerAlert('ACCOUNT_CHANGE', `Account balance updated: $${settings.account.toLocaleString()} (${change >= 0 ? '+' : ''}$${change.toFixed(2)})`);
+        this.lastState.lastAccountBalance = settings.account;
+        this.updateCockpitNow();
+      }
+    });
+    
+    // Monitor scanner signal changes
+    this.watchObject(window, 'sig', (signal) => {
+      const signalCount = Object.keys(signal).filter(k => signal[k]).length;
+      if (signalCount !== this.lastState.lastSignalCount) {
+        this.triggerAlert('SIGNAL_CHANGE', `Scanner signals updated: ${signalCount}/8 conditions met`);
+        this.lastState.lastSignalCount = signalCount;
+        this.updateCockpitNow();
+      }
+    });
+    
+    // Monitor feed status
+    this.watchObject(window, 'Feed', (feed) => {
+      if (feed.connected !== this.lastState.lastFeedStatus) {
+        this.triggerAlert('FEED_STATUS', feed.connected ? '🟢 Market data connected' : '🔴 Market data disconnected');
+        this.lastState.lastFeedStatus = feed.connected;
+        this.updateCockpitNow();
+      }
+    });
+  }
+  
+  watchArray(obj, prop, callback) {
+    let originalArray = obj[prop];
+    Object.defineProperty(obj, prop, {
+      get: () => originalArray,
+      set: (newArray) => {
+        if (JSON.stringify(originalArray) !== JSON.stringify(newArray)) {
+          originalArray = newArray;
+          callback(newArray);
+        }
+      }
+    });
+  }
+  
+  watchObject(obj, prop, callback) {
+    let originalValue = obj[prop];
+    Object.defineProperty(obj, prop, {
+      get: () => originalValue,
+      set: (newValue) => {
+        if (JSON.stringify(originalValue) !== JSON.stringify(newValue)) {
+          originalValue = newValue;
+          callback(newValue);
+        }
+      }
+    });
+  }
+  
+  triggerAlert(type, message) {
+    const alert = {
+      type,
+      message,
+      timestamp: new Date(),
+      priority: this.getAlertPriority(type)
+    };
+    
+    cockpitState.alerts.unshift(alert);
+    if (cockpitState.alerts.length > 10) cockpitState.alerts.pop(); // Keep only recent 10
+    
+    console.log(`🧠 ALERT [${type}]: ${message}`);
+  }
+  
+  getAlertPriority(type) {
+    const priorities = {
+      'TRADE_UPDATE': 'medium',
+      'ACCOUNT_CHANGE': 'high',
+      'SIGNAL_CHANGE': 'medium',
+      'FEED_STATUS': 'high',
+      'RISK_ALERT': 'critical',
+      'SESSION_CHANGE': 'low'
+    };
+    return priorities[type] || 'low';
+  }
+  
+  performRealtimeCheck() {
+    if (!this.active) return;
+    
+    try {
+      // Check all system components
+      const currentTime = Date.now();
+      const timeSinceUpdate = currentTime - cockpitState.lastUpdate;
+      
+      // Force update if it's been more than 30 seconds or if significant changes detected
+      if (timeSinceUpdate > 30000 || this.hasSignificantChanges()) {
+        this.updateCockpitNow();
+      }
+      
+    } catch (error) {
+      console.error('🧠 Cockpit Monitor Error:', error);
+    }
+  }
+  
+  hasSignificantChanges() {
+    // Check for significant system changes
+    const currentTrades = trades ? trades.length : 0;
+    const currentAccount = S ? S.account : 0;
+    const currentFeedStatus = Feed ? Feed.connected : false;
+    const currentSignalCount = sig ? Object.keys(sig).filter(k => sig[k]).length : 0;
+    
+    return (
+      currentTrades !== this.lastState.lastTradeCount ||
+      currentAccount !== this.lastState.lastAccountBalance ||
+      currentFeedStatus !== this.lastState.lastFeedStatus ||
+      currentSignalCount !== this.lastState.lastSignalCount
+    );
+  }
+  
+  updateCockpitNow() {
+    cockpitState.lastUpdate = Date.now();
+    
+    // Update personality based on current conditions
+    this.updatePersonality();
+    
+    // Generate and display new briefing
+    const briefingContainer = document.getElementById('cockpit-briefing');
+    if (!briefingContainer) return;
+    
+    try {
+      const briefingContent = generateLiveCockpitBriefing();
+      if (briefingContent !== cockpitState.lastBriefing) {
+        briefingContainer.innerHTML = briefingContent;
+        cockpitState.lastBriefing = briefingContent;
+        console.log('🧠 Cockpit updated with live briefing');
+      }
+    } catch (error) {
+      console.error('Error generating live cockpit briefing:', error);
+      briefingContainer.innerHTML = '<div style="text-align:center;color:var(--red);padding:20px">⚠️ Briefing generation failed. Please refresh.</div>';
+    }
+  }
+  
+  updatePersonality() {
+    // Adjust personality based on system conditions
+    const stats = getStats ? getStats() : { wr: 0, totPnl: 0 };
+    const todayPL = todayPnL ? todayPnL() : 0;
+    const account = S ? S.account : 0;
+    
+    if (todayPL < -account * 0.05) {
+      cockpitState.personality = 'urgent'; // Losing more than 5%
+    } else if (stats.wr < 40 && stats.tot > 10) {
+      cockpitState.personality = 'cautious'; // Low win rate with enough trades
+    } else if (todayPL > account * 0.03) {
+      cockpitState.personality = 'celebratory'; // Good profit day
+    } else {
+      cockpitState.personality = 'professional';
+    }
+  }
+  
+  destroy() {
+    this.active = false;
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+    }
   }
 }
 
-function generateCockpitBriefing() {
-  // FALLBACK: Use local functions if TypeScript bridge not available
-  let t2, hh, mm, today, dayOfWeek, isWeekend, stats, todayPnL, totalPnL, todayTradesCount, account, session, scannerReady;
+// Initialize cockpit monitor
+let cockpitMonitor = null;
+
+// Start the real-time cockpit monitoring system
+function initializeCockpitMonitor() {
+  if (cockpitMonitor) {
+    cockpitMonitor.destroy(); // Clean up existing instance
+  }
   
-  try {
-    if (window.tsBridge && window.tsBridge.eat) {
-      t2 = window.tsBridge.eat();
-      hh = String(t2.getHours()).padStart(2, '0');
-      mm = String(t2.getMinutes()).padStart(2, '0');
-      today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-      dayOfWeek = t2.getDay();
-      isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-      session = window.tsBridge.curSess();
-      scannerReady = window.tsBridge.checkedCount() === 8;
-    } else {
-      throw new Error('TypeScript bridge not available');
+  cockpitMonitor = new CockpitMonitor();
+  console.log('🧠 Cockpit Monitor initialized - Real-time surveillance active');
+}
+
+// Enhanced functions to trigger cockpit updates
+const originalLogTrade = window.logTrade;
+const originalSaveAll = window.saveAll;
+const originalSetDir = window.setDir;
+const originalResetScan = window.resetScan;
+
+// Hook into trade logging
+window.logTrade = function() {
+  const result = originalLogTrade ? originalLogTrade.apply(this, arguments) : undefined;
+  if (cockpitMonitor) {
+    cockpitMonitor.triggerAlert('TRADE_LOGGED', 'New trade logged in system');
+    cockpitMonitor.updateCockpitNow();
+  }
+  return result;
+};
+
+// Hook into settings saves
+window.saveAll = function() {
+  const result = originalSaveAll ? originalSaveAll.apply(this, arguments) : undefined;
+  if (cockpitMonitor) {
+    cockpitMonitor.triggerAlert('SETTINGS_UPDATE', 'System settings updated');
+    cockpitMonitor.updateCockpitNow();
+  }
+  return result;
+};
+
+// Hook into direction changes
+window.setDir = function(d) {
+  const result = originalSetDir ? originalSetDir.apply(this, arguments) : undefined;
+  if (cockpitMonitor) {
+    cockpitMonitor.triggerAlert('DIRECTION_CHANGE', `Signal direction changed to ${d}`);
+    cockpitMonitor.updateCockpitNow();
+  }
+  return result;
+};
+
+// Hook into scanner resets
+window.resetScan = function() {
+  const result = originalResetScan ? originalResetScan.apply(this, arguments) : undefined;
+  if (cockpitMonitor) {
+    cockpitMonitor.triggerAlert('SCANNER_RESET', 'Scanner signals reset');
+    cockpitMonitor.updateCockpitNow();
+  }
+  return result;
+};
+
+// Hook into toast notifications for additional awareness
+const originalToast = window.toast;
+window.toast = function(msg, type) {
+  const result = originalToast ? originalToast.apply(this, arguments) : undefined;
+  if (cockpitMonitor && type && type !== 'ok') {
+    cockpitMonitor.triggerAlert('SYSTEM_MESSAGE', `${type.toUpperCase()}: ${msg}`);
+    cockpitMonitor.updateCockpitNow();
+  }
+  return result;
+};
+
+// Auto-initialize when page loads
+setTimeout(() => {
+  initializeCockpitMonitor();
+}, 1000);
+
+function updateCockpit() {
+  // Legacy function - now handled by CockpitMonitor
+  if (cockpitMonitor) {
+    cockpitMonitor.updateCockpitNow();
+  }
+}
+
+function generateLiveCockpitBriefing() {
+  // REAL-TIME BRIEFING: Get current system state
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  const today = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+  const isWeekend = now.getDay() === 0 || now.getDay() === 6;
+  
+  // Get real-time system data
+  const stats = getStats ? getStats() : { tot: 0, wins: 0, losses: 0, wr: 0, avgR: 0, totPnl: 0, best: 0, worst: 0, cw: 0, cl: 0 };
+  const todayPnL = todayPnL ? todayPnL() : 0;
+  const totalPnL = totalPnL ? totalPnL() : 0;
+  const todayTrades = todayTrades ? todayTrades() : [];
+  const todayTradesCount = todayTrades.length;
+  const account = S ? S.account : 0;
+  const session = curSess ? curSess() : { name: 'UNKNOWN', active: false, desc: 'Session data unavailable' };
+  const scannerReady = checkedCount ? checkedCount() === 8 : false;
+  const signalCount = sig ? Object.keys(sig).filter(k => sig[k]).length : 0;
+  const feedConnected = Feed ? Feed.connected : false;
+  const currentPrice = Feed && Feed.price ? Feed.price : 0;
+  
+  // Get recent alerts
+  const recentAlerts = cockpitState.alerts.slice(0, 3);
+  
+  // Personality-based messaging
+  const personality = cockpitState.personality;
+  const personalityConfig = getPersonalityConfig(personality);
+  
+  // Dynamic briefing generation
+  let briefing = '<div style="font-family:system-ui,-apple-system,sans-serif;line-height:1.6;color:var(--tx)">';
+  
+  // Header with live timestamp
+  briefing += '<div style="text-align:center;margin-bottom:20px;background:var(--bg3);padding:12px;border-radius:8px;border:1px solid var(--br)">';
+  briefing += '<h2 style="margin:0;color:' + personalityConfig.headerColor + ';font-size:18px;font-weight:700">' + personalityConfig.icon + ' Your Trading Assistant Live Briefing</h2>';
+  briefing += '<div style="font-size:13px;color:var(--tx2)">' + today + ' • ' + hh + ':' + mm + ':' + ss + ' EAT • ' + session.name + '</div>';
+  briefing += '<div style="font-size:11px;color:var(--tx3);margin-top:4px">Last updated: ' + new Date(cockpitState.lastUpdate).toLocaleTimeString() + '</div>';
+  briefing += '</div>';
+  
+  // Personality-based greeting
+  briefing += generatePersonalityGreeting(personality, isWeekend, session, todayPnL, stats);
+  
+  // Live alerts section
+  if (recentAlerts.length > 0) {
+    briefing += '<div style="margin-bottom:16px">';
+    briefing += '<h3 style="margin:0 0 8px;color:var(--gold);font-size:14px">🚨 Recent Alerts</h3>';
+    recentAlerts.forEach(alert => {
+      const alertColor = getAlertColor(alert.priority);
+      briefing += '<div style="padding:8px;background:' + alertColor.bg + ';border-radius:4px;border-left:3px solid ' + alertColor.border + ';margin-bottom:6px">';
+      briefing += '<div style="font-size:11px;color:var(--tx2)">' + alert.timestamp.toLocaleTimeString() + '</div>';
+      briefing += '<div style="font-size:12px;color:' + alertColor.text + '">' + alert.message + '</div>';
+      briefing += '</div>';
+    });
+    briefing += '</div>';
+  }
+  
+  // Real-time system status grid
+  briefing += '<div style="margin-bottom:16px">';
+  briefing += '<h3 style="margin:0 0 8px;color:var(--gold);font-size:14px">📊 Live System Status</h3>';
+  briefing += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">';
+  
+  // Market Feed Status
+  briefing += '<div style="padding:10px;background:var(--bg4);border-radius:6px;border:1px solid ' + (feedConnected ? 'var(--green)' : 'var(--red)') + '">';
+  briefing += '<div style="font-size:10px;color:var(--tx2);margin-bottom:4px">📡 Market Feed</div>';
+  briefing += '<div style="font-size:12px;font-weight:600;color:' + (feedConnected ? 'var(--green)' : 'var(--red)') + '">';
+  briefing += feedConnected ? '🟢 CONNECTED' : '🔴 OFFLINE';
+  briefing += '</div>';
+  if (currentPrice > 0) {
+    briefing += '<div style="font-size:10px;color:var(--tx2)">XAU $' + currentPrice.toFixed(2) + '</div>';
+  }
+  briefing += '</div>';
+  
+  // Trading Activity
+  briefing += '<div style="padding:10px;background:var(--bg4);border-radius:6px;border:1px solid var(--gold)">';
+  briefing += '<div style="font-size:10px;color:var(--tx2);margin-bottom:4px">📈 Today\'s Activity</div>';
+  briefing += '<div style="font-size:12px;font-weight:600;color:var(--gold)">' + todayTradesCount + ' Trades</div>';
+  briefing += '<div style="font-size:10px;color:' + (todayPnL >= 0 ? 'var(--green)' : 'var(--red)') + '">P&L: ' + (todayPnL >= 0 ? '+' : '') + '$' + todayPnL.toFixed(2) + '</div>';
+  briefing += '</div>';
+  
+  // Scanner Status
+  briefing += '<div style="padding:10px;background:var(--bg4);border-radius:6px;border:1px solid ' + (scannerReady ? 'var(--green)' : 'var(--amber)') + '">';
+  briefing += '<div style="font-size:10px;color:var(--tx2);margin-bottom:4px">🎯 Scanner</div>';
+  briefing += '<div style="font-size:12px;font-weight:600;color:' + (scannerReady ? 'var(--green)' : 'var(--amber)') + '">';
+  briefing += signalCount + '/8 Ready';
+  briefing += '</div>';
+  briefing += '<div style="font-size:10px;color:var(--tx2)">' + (scannerReady ? '🟢 Signal Active' : '⏳ Waiting') + '</div>';
+  briefing += '</div>';
+  
+  // Account Status
+  briefing += '<div style="padding:10px;background:var(--bg4);border-radius:6px;border:1px solid var(--gold)">';
+  briefing += '<div style="font-size:10px;color:var(--tx2);margin-bottom:4px">💰 Account</div>';
+  briefing += '<div style="font-size:12px;font-weight:600;color:var(--gold)">$' + account.toLocaleString() + '</div>';
+  briefing += '<div style="font-size:10px;color:var(--tx2)">Total: ' + (totalPnL >= 0 ? '+' : '') + '$' + totalPnL.toFixed(2) + '</div>';
+  briefing += '</div>';
+  
+  briefing += '</div></div>';
+  
+  // Performance insights
+  briefing += generatePerformanceInsights(stats, todayPnL, personality);
+  
+  // Recent trades summary
+  if (todayTrades.length > 0) {
+    briefing += generateRecentTradesSummary(todayTrades);
+  }
+  
+  // Session-specific guidance
+  briefing += generateSessionGuidance(session, scannerReady, personality);
+  
+  briefing += '</div>';
+  
+  return briefing;
+}
+
+function getPersonalityConfig(personality) {
+  const configs = {
+    'professional': {
+      icon: '🧠',
+      headerColor: 'var(--gold)',
+      tone: 'analytical',
+      urgency: 'low'
+    },
+    'urgent': {
+      icon: '🚨',
+      headerColor: 'var(--red)',
+      tone: 'critical',
+      urgency: 'high'
+    },
+    'cautious': {
+      icon: '⚠️',
+      headerColor: 'var(--amber)',
+      tone: 'careful',
+      urgency: 'medium'
+    },
+    'celebratory': {
+      icon: '🎉',
+      headerColor: 'var(--green)',
+      tone: 'positive',
+      urgency: 'low'
     }
-  } catch (error) {
-    console.warn('🔧 Using fallback functions for cockpit briefing:', error.message);
-    // Fallback to HTML functions
-    t2 = eat();
-    hh = String(t2.getHours()).padStart(2, '0');
-    mm = String(t2.getMinutes()).padStart(2, '0');
-    today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-    dayOfWeek = t2.getDay();
-    isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-    session = curSess();
-    scannerReady = checkedCount() === 8;
+  };
+  return configs[personality] || configs.professional;
+}
+
+function generatePersonalityGreeting(personality, isWeekend, session, todayPnL, stats) {
+  let greeting = '';
+  const currentHour = new Date().getHours();
+  let timeGreeting = 'Good Evening';
+  
+  if (currentHour >= 5 && currentHour < 12) timeGreeting = 'Good Morning';
+  else if (currentHour >= 12 && currentHour < 17) timeGreeting = 'Good Afternoon';
+  else if (currentHour >= 17 && currentHour < 21) timeGreeting = 'Good Evening';
+  else timeGreeting = 'Good Night';
+  
+  const bgColor = personality === 'urgent' ? 'var(--rd2)' : personality === 'celebratory' ? 'var(--gn2)' : 'var(--gn2)';
+  const borderColor = personality === 'urgent' ? 'var(--red)' : personality === 'celebratory' ? 'var(--green)' : 'var(--green)';
+  const textColor = personality === 'urgent' ? 'var(--red)' : personality === 'celebratory' ? 'var(--green)' : 'var(--green)';
+  
+  greeting += '<div style="padding:16px;background:' + bgColor + ';border-radius:8px;border:1px solid ' + borderColor + ';margin-bottom:16px">';
+  greeting += '<div style="font-size:14px;font-weight:600;color:' + textColor + ';margin-bottom:8px">';
+  
+  if (isWeekend) {
+    greeting += '🌴 Happy Weekend, Sir!';
+  } else if (personality === 'urgent') {
+    greeting += '🚨 URGENT ATTENTION REQUIRED';
+  } else if (personality === 'celebratory') {
+    greeting += '🎉 EXCELLENT PERFORMANCE TODAY!';
+  } else {
+    greeting += '👋 ' + timeGreeting + ', Sir';
   }
   
-  // Get system data (these should work regardless)
-  try {
-    stats = getStats();
-    todayPnL = todayPnL();
-    totalPnL = totalPnL();
-    todayTradesCount = todayTrades().length;
-    account = S.account || 0;
-  } catch (error) {
-    console.warn('🔧 Using fallback statistics:', error.message);
-    stats = { tot: 0, wins: 0, losses: 0, wr: 0, avgR: 0, totPnl: 0, best: 0, worst: 0, cw: 0, cl: 0 };
-    todayPnL = 0;
-    totalPnL = 0;
-    todayTradesCount = 0;
-    account = S.account || 0;
+  greeting += '</div>';
+  greeting += '<div style="font-size:12px;line-height:1.5;color:var(--tx)">';
+  
+  if (personality === 'urgent') {
+    greeting += 'Critical situation detected. Your account is down more than 5% today. Immediate risk management required. Stop trading and assess strategy.';
+  } else if (personality === 'cautious') {
+    greeting += 'Your recent win rate requires attention. Consider reviewing your setup and waiting for higher probability signals.';
+  } else if (personality === 'celebratory') {
+    greeting += 'Outstanding performance! You\'re having a profitable day. Maintain discipline and consider securing some profits.';
+  } else if (isWeekend) {
+    greeting += 'Markets are closed - perfect time for review, education, and preparation for the week ahead.';
+  } else {
+    greeting += 'I\'m monitoring your entire trading system in real-time. ' + (session.active ? 'We\'re in an active trading window - stay focused and disciplined.' : 'Markets are currently closed - ideal time for analysis and preparation.');
   }
+  
+  greeting += '</div></div>';
+  
+  return greeting;
+}
+
+function getAlertColor(priority) {
+  const colors = {
+    'critical': { bg: 'var(--rd2)', border: 'var(--red)', text: 'var(--red)' },
+    'high': { bg: 'var(--ad)', border: 'var(--amber)', text: 'var(--amber)' },
+    'medium': { bg: 'var(--gd2)', border: 'var(--gold)', text: 'var(--gold)' },
+    'low': { bg: 'var(--bg4)', border: 'var(--tx2)', text: 'var(--tx2)' }
+  };
+  return colors[priority] || colors.low;
+}
+
+function generatePerformanceInsights(stats, todayPnL, personality) {
+  let insights = '<div style="margin-bottom:16px">';
+  insights += '<h3 style="margin:0 0 8px;color:var(--gold);font-size:14px">📈 Performance Insights</h3>';
+  insights += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px">';
+  
+  // Win Rate
+  insights += '<div style="padding:8px;background:var(--bg4);border-radius:6px">';
+  insights += '<div style="font-size:10px;color:var(--tx2);margin-bottom:4px">🎯 Win Rate</div>';
+  insights += '<div style="font-size:12px;font-weight:600;color:' + (stats.wr >= 50 ? 'var(--green)' : 'var(--amber)') + '">' + stats.wr.toFixed(1) + '%</div>';
+  insights += '<div style="font-size:10px;color:var(--tx2)">' + stats.wins + '/' + stats.tot + ' wins</div>';
+  insights += '</div>';
+  
+  // Average R
+  insights += '<div style="padding:8px;background:var(--bg4);border-radius:6px">';
+  insights += '<div style="font-size:10px;color:var(--tx2);margin-bottom:4px">📊 Avg R</div>';
+  insights += '<div style="font-size:12px;font-weight:600;color:' + (stats.avgR >= 1.5 ? 'var(--green)' : 'var(--amber)') + '">' + stats.avgR.toFixed(2) + 'R</div>';
+  insights += '<div style="font-size:10px;color:var(--tx2)">Risk/Reward</div>';
+  insights += '</div>';
+  
+  // Streak
+  insights += '<div style="padding:8px;background:var(--bg4);border-radius:6px">';
+  insights += '<div style="font-size:10px;color:var(--tx2);margin-bottom:4px">🔥 Current Streak</div>';
+  insights += '<div style="font-size:12px;font-weight:600;color:' + (stats.cw > stats.cl ? 'var(--green)' : 'var(--red)') + '">' + (stats.cw > 0 ? stats.cw + 'W' : stats.cl + 'L') + '</div>';
+  insights += '<div style="font-size:10px;color:var(--tx2)">Consecutive</div>';
+  insights += '</div>';
+  
+  // Today's Performance
+  insights += '<div style="padding:8px;background:var(--bg4);border-radius:6px">';
+  insights += '<div style="font-size:10px;color:var(--tx2);margin-bottom:4px">💵 Today</div>';
+  insights += '<div style="font-size:12px;font-weight:600;color:' + (todayPnL >= 0 ? 'var(--green)' : 'var(--red)') + '">' + (todayPnL >= 0 ? '+' : '') + '$' + todayPnL.toFixed(2) + '</div>';
+  insights += '<div style="font-size:10px;color:var(--tx2)">Net P&L</div>';
+  insights += '</div>';
+  
+  insights += '</div></div>';
+  
+  return insights;
+}
+
+function generateRecentTradesSummary(todayTrades) {
+  let summary = '<div style="margin-bottom:16px">';
+  summary += '<h3 style="margin:0 0 8px;color:var(--gold);font-size:14px">📋 Recent Trades</h3>';
+  
+  if (todayTrades.length === 0) {
+    summary += '<div style="padding:12px;background:var(--bg4);border-radius:6px;text-align:center;color:var(--tx2)">No trades today</div>';
+  } else {
+    summary += '<div style="max-height:150px;overflow-y:auto">';
+    todayTrades.slice(-5).reverse().forEach(trade => {
+      const pnl = trade.pnl || 0;
+      const isWin = pnl > 0;
+      summary += '<div style="padding:8px;background:var(--bg4);border-radius:4px;margin-bottom:6px;border-left:3px solid ' + (isWin ? 'var(--green)' : 'var(--red)') + '">';
+      summary += '<div style="display:flex;justify-content:space-between;align-items:center">';
+      summary += '<div>';
+      summary += '<div style="font-size:11px;color:var(--tx2)">' + trade.time + ' • ' + (trade.dir || 'UNKNOWN') + '</div>';
+      summary += '<div style="font-size:10px;color:var(--tx3)">$' + parseFloat(trade.entry || 0).toFixed(2) + ' → $' + parseFloat(trade.exit || 0).toFixed(2) + '</div>';
+      summary += '</div>';
+      summary += '<div style="text-align:right">';
+      summary += '<div style="font-size:12px;font-weight:600;color:' + (isWin ? 'var(--green)' : 'var(--red)') + '">' + (isWin ? '+' : '') + '$' + pnl.toFixed(2) + '</div>';
+      summary += '<div style="font-size:10px;color:var(--tx2)">' + (trade.outcome || 'PENDING') + '</div>';
+      summary += '</div>';
+      summary += '</div></div>';
+    });
+    summary += '</div>';
+  }
+  
+  summary += '</div>';
+  return summary;
+}
+
+function generateSessionGuidance(session, scannerReady, personality) {
+  let guidance = '<div style="margin-bottom:16px">';
+  guidance += '<h3 style="margin:0 0 8px;color:var(--gold);font-size:14px">🎯 Session Guidance</h3>';
+  
+  let guidanceText = '';
+  let guidanceColor = 'var(--gn2)';
+  let borderColor = 'var(--green)';
+  
+  if (!session.active) {
+    guidanceText = session.desc || 'Markets are currently closed. Use this time for analysis and preparation.';
+    guidanceColor = 'var(--bd)';
+    borderColor = 'var(--blue)';
+  } else if (personality === 'urgent') {
+    guidanceText = '⚠️ RISK WARNING: Your account is at risk. Consider stopping trading for today and reviewing your strategy.';
+    guidanceColor = 'var(--rd2)';
+    borderColor = 'var(--red)';
+  } else if (scannerReady) {
+    guidanceText = '🟢 All signals confirmed. This is a high-probability setup. Ensure proper risk management before entering.';
+    guidanceColor = 'var(--gn2)';
+    borderColor = 'var(--green)';
+  } else {
+    guidanceText = '⏳ Waiting for optimal setup. Current conditions: ' + (sig ? Object.keys(sig).filter(k => sig[k]).length : 0) + '/8 signals met. Patience is key.';
+    guidanceColor = 'var(--ad)';
+    borderColor = 'var(--amber)';
+  }
+  
+  guidance += '<div style="padding:12px;background:' + guidanceColor + ';border-radius:8px;border:1px solid ' + borderColor + '">';
+  guidance += '<div style="font-size:12px;line-height:1.5;color:var(--tx)">' + guidanceText + '</div>';
+  guidance += '</div>';
+  
+  guidance += '</div>';
+  return guidance;
+}
+
+// Legacy fallback function
+function generateCockpitBriefing() {
+  return generateLiveCockpitBriefing();
+}
   
   // Risk analysis
   const dailyStop = account * S.personalstop / 100;
