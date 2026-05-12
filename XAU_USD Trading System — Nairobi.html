@@ -1836,6 +1836,14 @@ let strategyPerformance = {};
 
 function loadAll() {
   try {
+    // Auto-connect live feed if key is available
+    if (S.feedkey && !Feed.connected) {
+      console.log('🔄 Auto-connecting live feed...');
+      setTimeout(() => {
+        Feed.start();
+      }, 2000);
+    }
+    
     // Phase 4: Try TypeScript StateManager first
     let tsLoaded = false;
     if (window.TS_INTEGRATION && window.TS_INTEGRATION.stateManager) {
@@ -4086,15 +4094,32 @@ window.toast = function(msg, type) {
   return result;
 };
 
-// Auto-initialize when page loads
-setTimeout(() => {
-  initializeCockpitMonitor();
-}, 1000);
+// DISABLED: Cockpit monitoring breaking system
+// setTimeout(() => {
+//   initializeCockpitMonitor();
+// }, 1000);
+
+// Simple cockpit update instead
+function simpleCockpitUpdate() {
+  if (document.getElementById('pnl-cockpit').classList.contains('on')) {
+    updateCockpit();
+  }
+}
+
+// Update cockpit every 30 seconds (safe approach)
+setInterval(simpleCockpitUpdate, 30000);
 
 function updateCockpit() {
-  // Legacy function - now handled by CockpitMonitor
-  if (cockpitMonitor) {
-    cockpitMonitor.updateCockpitNow();
+  // Safe cockpit update without monitor
+  const briefingContainer = document.getElementById('cockpit-briefing');
+  if (!briefingContainer) return;
+  
+  try {
+    const briefingContent = generateLiveCockpitBriefing();
+    briefingContainer.innerHTML = briefingContent;
+  } catch (error) {
+    console.error('Error updating cockpit:', error);
+    briefingContainer.innerHTML = '<div style="text-align:center;color:var(--red);padding:20px">⚠️ Briefing generation failed. Please refresh.</div>';
   }
 }
 
@@ -4107,24 +4132,63 @@ function generateLiveCockpitBriefing() {
   const today = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
   const isWeekend = now.getDay() === 0 || now.getDay() === 6;
   
-  // Get real-time system data
-  const stats = getStats ? getStats() : { tot: 0, wins: 0, losses: 0, wr: 0, avgR: 0, totPnl: 0, best: 0, worst: 0, cw: 0, cl: 0 };
-  const todayPnL = todayPnL ? todayPnL() : 0;
-  const totalPnL = totalPnL ? totalPnL() : 0;
-  const todayTrades = todayTrades ? todayTrades() : [];
-  const todayTradesCount = todayTrades.length;
-  const account = S ? S.account : 0;
-  const session = curSess ? curSess() : { name: 'UNKNOWN', active: false, desc: 'Session data unavailable' };
-  const scannerReady = checkedCount ? checkedCount() === 8 : false;
-  const signalCount = sig ? Object.keys(sig).filter(k => sig[k]).length : 0;
-  const feedConnected = Feed ? Feed.connected : false;
-  const currentPrice = Feed && Feed.price ? Feed.price : 0;
+  // Get real-time system data with safe fallbacks
+  let stats = { tot: 0, wins: 0, losses: 0, wr: 0, avgR: 0, totPnl: 0, best: 0, worst: 0, cw: 0, cl: 0 };
+  let todayPnL = 0;
+  let totalPnL = 0;
+  let todayTrades = [];
+  let todayTradesCount = 0;
+  let account = 0;
+  let session = { name: 'UNKNOWN', active: false, desc: 'Session data unavailable' };
+  let scannerReady = false;
+  let signalCount = 0;
+  let feedConnected = false;
+  let currentPrice = 0;
   
-  // Get recent alerts
-  const recentAlerts = cockpitState.alerts.slice(0, 3);
+  // Safe data extraction
+  try {
+    if (typeof getStats === 'function') stats = getStats();
+  } catch(e) { console.warn('Stats error:', e); }
   
-  // Personality-based messaging
-  const personality = cockpitState.personality;
+  try {
+    if (typeof todayPnL === 'function') todayPnL = todayPnL();
+  } catch(e) { console.warn('Today P&L error:', e); }
+  
+  try {
+    if (typeof totalPnL === 'function') totalPnL = totalPnL();
+  } catch(e) { console.warn('Total P&L error:', e); }
+  
+  try {
+    if (typeof todayTrades === 'function') todayTrades = todayTrades();
+    todayTradesCount = todayTrades.length;
+  } catch(e) { console.warn('Today trades error:', e); }
+  
+  try {
+    account = S ? S.account : 0;
+  } catch(e) { console.warn('Account error:', e); }
+  
+  try {
+    if (typeof curSess === 'function') session = curSess();
+  } catch(e) { console.warn('Session error:', e); }
+  
+  try {
+    if (typeof checkedCount === 'function') scannerReady = checkedCount() === 8;
+  } catch(e) { console.warn('Checked count error:', e); }
+  
+  try {
+    signalCount = sig ? Object.keys(sig).filter(k => sig[k]).length : 0;
+  } catch(e) { console.warn('Signal count error:', e); }
+  
+  try {
+    feedConnected = Feed ? Feed.connected : false;
+    currentPrice = Feed && Feed.price ? Feed.price : 0;
+  } catch(e) { console.warn('Feed error:', e); }
+  
+  // Get recent alerts (safe)
+  const recentAlerts = cockpitState && cockpitState.alerts ? cockpitState.alerts.slice(0, 3) : [];
+  
+  // Personality-based messaging (safe)
+  const personality = cockpitState && cockpitState.personality ? cockpitState.personality : 'professional';
   const personalityConfig = getPersonalityConfig(personality);
   
   // Dynamic briefing generation
