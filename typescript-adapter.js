@@ -277,7 +277,9 @@
             {name:'NY CONT.',  sh:'NY',       s:17, e:21, c:'am', active:true,  desc:'Manage open trades only. No new entries after 17:00.'},
             {name:'HARD CLOSE',sh:'CLOSE',    s:21, e:24, c:'rd', active:false, desc:'ALL POSITIONS MUST BE FLAT. No trading until 10:00 EAT tomorrow.'}
           ];
-          const h = window.tsBridge.eatH();
+          // Fixed: Use local function instead of circular reference
+          const t = new Date(new Date().toLocaleString('en-US', {timeZone: 'Africa/Nairobi'}));
+          const h = t.getHours() + t.getMinutes() / 60 + t.getSeconds() / 3600;
           return SESS.find(s => h >= s.s && h < s.e) || SESS[0];
         },
         checkedCount: () => {
