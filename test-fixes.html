@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Fixes</title>
+</head>
+<body>
+    <h1>Testing Fixes</h1>
+    <div id="test-output"></div>
+    
+    <script>
+        // Test 1: Check if TypeScript adapter loads
+        console.log('Testing TypeScript adapter...');
+        
+        // Test 2: Check greeting logic
+        const testHour = new Date().getHours();
+        let testGreeting = '👋 Good Evening Sir';
+        if (testHour >= 5 && testHour < 12) {
+            testGreeting = '🌅 Good Morning Sir';
+        } else if (testHour >= 12 && testHour < 17) {
+            testGreeting = '☀️ Good Afternoon Sir';
+        } else if (testHour >= 17 && testHour < 21) {
+            testGreeting = '🌆 Good Evening Sir';
+        } else {
+            testGreeting = '🌙 Good Night Sir';
+        }
+        
+        document.getElementById('test-output').innerHTML = `
+            <p>Current hour: ${testHour}</p>
+            <p>Test greeting: ${testGreeting}</p>
+            <p>TypeScript bridge available: ${typeof window.tsBridge !== 'undefined' ? 'YES' : 'NO'}</p>
+        `;
+        
+        // Test 3: Check if TypeScript bridge loads after a delay
+        setTimeout(() => {
+            console.log('After delay - TypeScript bridge:', typeof window.tsBridge);
+            document.getElementById('test-output').innerHTML += `
+                <p>After delay - TypeScript bridge: ${typeof window.tsBridge !== 'undefined' ? 'YES' : 'NO'}</p>
+            `;
+        }, 2000);
+    </script>
+    
+    <!-- Load TypeScript adapter -->
+    <script type="module" src="./typescript-adapter.js"></script>
+</body>
+</html>
