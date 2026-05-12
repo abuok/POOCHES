@@ -4094,32 +4094,20 @@ window.toast = function(msg, type) {
   return result;
 };
 
-// DISABLED: Cockpit monitoring breaking system
+// EMERGENCY: DISABLED ALL COCKPIT MONITORING - SYSTEM BREAKING
 // setTimeout(() => {
 //   initializeCockpitMonitor();
 // }, 1000);
 
-// Simple cockpit update instead
-function simpleCockpitUpdate() {
-  if (document.getElementById('pnl-cockpit').classList.contains('on')) {
-    updateCockpit();
-  }
-}
-
-// Update cockpit every 30 seconds (safe approach)
-setInterval(simpleCockpitUpdate, 30000);
-
+// EMERGENCY: Basic cockpit update only
 function updateCockpit() {
-  // Safe cockpit update without monitor
-  const briefingContainer = document.getElementById('cockpit-briefing');
-  if (!briefingContainer) return;
-  
   try {
-    const briefingContent = generateLiveCockpitBriefing();
-    briefingContainer.innerHTML = briefingContent;
-  } catch (error) {
-    console.error('Error updating cockpit:', error);
-    briefingContainer.innerHTML = '<div style="text-align:center;color:var(--red);padding:20px">⚠️ Briefing generation failed. Please refresh.</div>';
+    const briefingContainer = document.getElementById('cockpit-briefing');
+    if (briefingContainer) {
+      briefingContainer.innerHTML = '<div style="padding:20px;text-align:center;color:var(--tx)"><h2>🧠 Trading Assistant</h2><p>System restored to basic functionality.</p><p>Time: ' + new Date().toLocaleTimeString() + '</p></div>';
+    }
+  } catch (e) {
+    console.error('Cockpit update error:', e);
   }
 }
 

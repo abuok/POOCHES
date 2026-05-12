@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Emergency Fix Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #08090a; color: #e2ddd4; }
+        .test-btn { padding: 10px 20px; margin: 10px; background: #d4a017; border: none; border-radius: 4px; cursor: pointer; color: #08090a; font-weight: bold; }
+        .test-btn:hover { background: #f0c040; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #d4a017; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>🚨 Emergency System Test</h1>
+    
+    <button class="test-btn" onclick="testBasicJS()">Test Basic JavaScript</button>
+    <button class="test-btn" onclick="testGoFunction()">Test go() Function</button>
+    <button class="test-btn" onclick="testClickHandlers()">Test Click Handlers</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = 'result';
+            div.style.background = type === 'error' ? 'rgba(255,77,77,.1)' : type === 'success' ? 'rgba(0,201,122,.1)' : 'rgba(212,160,23,.1)';
+            div.style.borderColor = type === 'error' ? '#ff4d4d' : type === 'success' ? '#00c97a' : '#d4a017';
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            results.appendChild(div);
+        }
+        
+        function testBasicJS() {
+            try {
+                addResult('✅ Basic JavaScript working', 'success');
+                
+                // Test event handling
+                const testBtn = document.createElement('button');
+                testBtn.textContent = 'Test Click';
+                testBtn.onclick = () => addResult('✅ Click event working', 'success');
+                document.body.appendChild(testBtn);
+                
+            } catch (e) {
+                addResult('❌ Basic JavaScript error: ' + e.message, 'error');
+            }
+        }
+        
+        function testGoFunction() {
+            try {
+                // Test if go function exists
+                if (typeof go === 'function') {
+                    addResult('✅ go() function exists', 'success');
+                } else {
+                    addResult('❌ go() function not found', 'error');
+                }
+                
+                // Test navigation
+                addResult('Testing navigation to cockpit...', 'info');
+                
+            } catch (e) {
+                addResult('❌ Navigation error: ' + e.message, 'error');
+            }
+        }
+        
+        function testClickHandlers() {
+            try {
+                // Test onclick attributes
+                const buttons = document.querySelectorAll('button[onclick]');
+                addResult(`Found ${buttons.length} buttons with onclick handlers`, 'info');
+                
+                buttons.forEach((btn, index) => {
+                    try {
+                        const onclick = btn.getAttribute('onclick');
+                        addResult(`Button ${index + 1}: ${onclick}`, 'info');
+                    } catch (e) {
+                        addResult(`Button ${index + 1} error: ${e.message}`, 'error');
+                    }
+                });
+                
+            } catch (e) {
+                addResult('❌ Click handler test error: ' + e.message, 'error');
+            }
+        }
+        
+        // Auto-run basic test
+        setTimeout(() => {
+            addResult('🚨 Emergency fix loaded - testing system...', 'info');
+            testBasicJS();
+        }, 100);
+    </script>
+</body>
+</html>

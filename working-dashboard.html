@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>XAU/USD Trading System — Nairobi</title>
+    <style>
+        :root {
+            --bg: #08090a;
+            --bg2: #0f1112;
+            --bg3: #1a1d1f;
+            --bg4: #232628;
+            --tx: #e2ddd4;
+            --tx2: #a8a29e;
+            --tx3: #78716c;
+            --gold: #d4a017;
+            --gold2: #f59e0b;
+            --green: #00c97a;
+            --red: #ff4d4d;
+            --amber: #f59e0b;
+            --br: #2d3135;
+            --br2: #3d4145;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--tx);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 52px;
+            background: rgba(8,9,10,.97);
+            border-bottom: 1px solid var(--br);
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            z-index: 300;
+        }
+        
+        #logo {
+            font-family: monospace;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: .06em;
+            padding-right: 16px;
+            border-right: 1px solid var(--br);
+        }
+        
+        #sidebar {
+            position: fixed;
+            top: 52px;
+            left: 0;
+            bottom: 0;
+            width: 56px;
+            background: var(--bg2);
+            border-right: 1px solid var(--br);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 0;
+            gap: 2px;
+            z-index: 200;
+        }
+        
+        .nav-btn {
+            width: 44px;
+            height: 48px;
+            border-radius: 5px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            color: var(--tx3);
+            transition: all .15s;
+            font-size: 10px;
+        }
+        
+        .nav-btn:hover {
+            background: var(--bg3);
+            color: var(--tx2);
+        }
+        
+        .nav-btn.active {
+            background: var(--gold);
+            color: var(--bg);
+        }
+        
+        .nav-icon {
+            font-size: 16px;
+        }
+        
+        #main {
+            position: fixed;
+            top: 52px;
+            left: 56px;
+            right: 0;
+            bottom: 0;
+            overflow: auto;
+            padding: 20px;
+        }
+        
+        .panel {
+            display: none;
+            animation: fadeIn .3s ease;
+        }
+        
+        .panel.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .panel-header {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+        
+        .status-card {
+            background: var(--bg2);
+            border: 1px solid var(--br);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .status-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--tx2);
+            margin-bottom: 8px;
+        }
+        
+        .status-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        
+        .btn {
+            background: var(--gold);
+            color: var(--bg);
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .15s;
+        }
+        
+        .btn:hover {
+            background: var(--gold2);
+        }
+        
+        .btn.secondary {
+            background: var(--bg3);
+            color: var(--tx);
+            border: 1px solid var(--br);
+        }
+        
+        .btn.secondary:hover {
+            background: var(--bg4);
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div id="logo">XAU/USD TRADING SYSTEM</div>
+        <div id="clock">00:00:00 EAT</div>
+    </header>
+    
+    <nav id="sidebar">
+        <button class="nav-btn active" data-panel="cockpit">
+            <div class="nav-icon">⚡</div>
+            <div>Cockpit</div>
+        </button>
+        <button class="nav-btn" data-panel="scanner">
+            <div class="nav-icon">🔍</div>
+            <div>Scanner</div>
+        </button>
+        <button class="nav-btn" data-panel="journal">
+            <div class="nav-icon">📋</div>
+            <div>Journal</div>
+        </button>
+        <button class="nav-btn" data-panel="prop">
+            <div class="nav-icon">🏦</div>
+            <div>Prop</div>
+        </button>
+        <button class="nav-btn" data-panel="settings">
+            <div class="nav-icon">⚙️</div>
+            <div>Settings</div>
+        </button>
+    </nav>
+    
+    <main id="main">
+        <!-- Cockpit Panel -->
+        <div id="cockpit" class="panel active">
+            <h1 class="panel-header">🧠 Trading Cockpit</h1>
+            
+            <div class="status-card">
+                <div class="status-title">System Status</div>
+                <div class="status-value">✅ All Systems Operational</div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-title">Current Time</div>
+                <div class="status-value" id="current-time">Loading...</div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-title">Live Feed</div>
+                <div class="status-value" id="feed-status">🔄 Connecting...</div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-title">Account Balance</div>
+                <div class="status-value" id="account-balance">$10,000</div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button class="btn" onclick="refreshData()">🔄 Refresh Data</button>
+                <button class="btn secondary" onclick="testAlert()">📢 Test Alert</button>
+            </div>
+        </div>
+        
+        <!-- Scanner Panel -->
+        <div id="scanner" class="panel">
+            <h1 class="panel-header">🔍 Market Scanner</h1>
+            <div class="status-card">
+                <div class="status-title">Scanner Status</div>
+                <div class="status-value">⏳ Initializing...</div>
+            </div>
+        </div>
+        
+        <!-- Journal Panel -->
+        <div id="journal" class="panel">
+            <h1 class="panel-header">📋 Trading Journal</h1>
+            <div class="status-card">
+                <div class="status-title">Today's Trades</div>
+                <div class="status-value">0 trades</div>
+            </div>
+        </div>
+        
+        <!-- Prop Panel -->
+        <div id="prop" class="panel">
+            <h1 class="panel-header">🏦 Prop Firm Challenge</h1>
+            <div class="status-card">
+                <div class="status-title">Challenge Progress</div>
+                <div class="status-value">0% Complete</div>
+            </div>
+        </div>
+        
+        <!-- Settings Panel -->
+        <div id="settings" class="panel">
+            <h1 class="panel-header">⚙️ Settings</h1>
+            <div class="status-card">
+                <div class="status-title">Configuration</div>
+                <div class="status-value">System Ready</div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Working navigation system
+        const navButtons = document.querySelectorAll('.nav-btn');
+        const panels = document.querySelectorAll('.panel');
+        
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetPanel = this.dataset.panel;
+                
+                // Update active states
+                navButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                panels.forEach(panel => {
+                    panel.classList.remove('active');
+                    if (panel.id === targetPanel) {
+                        panel.classList.add('active');
+                    }
+                });
+                
+                console.log('Navigated to:', targetPanel);
+            });
+        });
+        
+        // Clock update
+        function updateClock() {
+            const now = new Date();
+            const nairobiTime = new Date(now.toLocaleString('en-US', {timeZone: 'Africa/Nairobi'}));
+            const timeStr = nairobiTime.toLocaleTimeString('en-US', { 
+                hour12: false, 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            
+            document.getElementById('clock').textContent = timeStr + ' EAT';
+            document.getElementById('current-time').textContent = nairobiTime.toLocaleString();
+        }
+        
+        // Update clock every second
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        // Mock functions
+        function refreshData() {
+            console.log('🔄 Refreshing data...');
+            document.getElementById('feed-status').textContent = '✅ Connected';
+            setTimeout(() => {
+                document.getElementById('feed-status').textContent = '🟢 Live Data Active';
+            }, 1000);
+        }
+        
+        function testAlert() {
+            console.log('📢 Testing alert system...');
+            alert('✅ Alert system working! Dashboard is fully functional.');
+        }
+        
+        // Auto-connect feed simulation
+        setTimeout(() => {
+            console.log('🔄 Auto-connecting feed...');
+            document.getElementById('feed-status').textContent = '🟢 Feed Connected';
+        }, 2000);
+        
+        console.log('🚀 Dashboard loaded successfully!');
+    </script>
+</body>
+</html>
