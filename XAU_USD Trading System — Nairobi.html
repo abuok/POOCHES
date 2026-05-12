@@ -2,8 +2,31 @@
 <!-- saved from url=(0061)file:///C:/Users/Administrator/Desktop/POOCHES/system_v3.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#d4a017">
+  <meta name="background-color" content="#08090a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Gold Trader">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Gold Trader">
+  <meta name="msapplication-TileColor" content="#d4a017">
+  <meta name="msapplication-tap-highlight" content="no">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="description" content="Professional XAU/USD trading dashboard with real-time analysis">
+  
   <title>XAU/USD Trading System — Nairobi</title>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png">
+  
+  <!-- Preconnect to external resources -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
   <link href="./XAU_USD Trading System — Nairobi_files/css2" rel="stylesheet">
   <script src="./XAU_USD Trading System — Nairobi_files/chart.js.download"></script>
   <script src="./XAU_USD Trading System — Nairobi_files/chart.umd.js.download"></script>
@@ -48,6 +71,481 @@ a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
 #sess-next{font-family:var(--mono);font-size:8px;color:var(--tx3);margin-top:2px}
 #acct-strip{display:flex;gap:18px;padding:0 14px;border-right:1px solid var(--br);flex:1}
 .ah{font-family:var(--mono);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3);margin-bottom:2px}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE OPTIMIZATIONS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── MOBILE VIEWPORT FIXES ─────────────────────────── */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific fixes */
+  html {
+    height: -webkit-fill-available;
+  }
+  body {
+    min-height: -webkit-fill-available;
+    min-height: 100dvh;
+  }
+}
+
+/* ── MOBILE BREAKPOINT: < 768px (Tablets & Phones) ───────────────── */
+@media (max-width: 768px) {
+  /* Adjust root font size for mobile */
+  html {
+    font-size: 16px;
+  }
+  
+  /* Hide some desktop-only elements */
+  #logo {
+    font-size: 11px;
+    padding-right: 8px;
+  }
+  
+  #clock-wrap {
+    padding: 0 8px;
+  }
+  
+  #clk {
+    font-size: 16px;
+  }
+  
+  /* Hide some header elements on small screens */
+  #sess-wrap {
+    display: none;
+  }
+  
+  /* Adjust account strip */
+  #acct-strip {
+    gap: 12px;
+    padding: 0 8px;
+  }
+  
+  .ah {
+    font-size: 7px;
+  }
+  
+  /* Mobile price widget */
+  #price-wrap {
+    min-width: 100px;
+    padding: 0 8px;
+  }
+  
+  #live-price {
+    font-size: 16px;
+  }
+}
+
+/* ── MOBILE BREAKPOINT: < 480px (Phones) ──────────────────────────── */
+@media (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+  
+  /* Compact header */
+  #hdr {
+    height: 48px;
+    padding: 0 10px;
+  }
+  
+  #logo {
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    padding-right: 6px;
+  }
+  
+  /* Show only essential header info */
+  #clock-wrap {
+    padding: 0 6px;
+    border-right: none;
+  }
+  
+  #clk {
+    font-size: 14px;
+  }
+  
+  #clkd {
+    display: none;
+  }
+  
+  /* Price widget - essential only */
+  #price-wrap {
+    min-width: auto;
+    padding: 0 6px;
+    border-right: none;
+    flex: 1;
+  }
+  
+  #live-price {
+    font-size: 14px;
+  }
+  
+  #price-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  
+  #price-chg {
+    font-size: 8px;
+  }
+  
+  #feed-dot {
+    font-size: 7px;
+  }
+  
+  /* Hide more elements */
+  #sess-wrap,
+  #acct-strip {
+    display: none;
+  }
+  
+  /* Show mobile menu button */
+  #mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--gold);
+    border: none;
+    border-radius: 8px;
+    color: var(--bg);
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: auto;
+  }
+}
+
+/* ── MOBILE BREAKPOINT: < 360px (Small phones) ────────────────────── */
+@media (max-width: 360px) {
+  html {
+    font-size: 13px;
+  }
+  
+  #hdr {
+    height: 44px;
+    padding: 0 8px;
+  }
+  
+  #logo {
+    font-size: 9px;
+  }
+}
+
+/* ── TOUCH-FRIENDLY INTERACTIONS ─────────────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets */
+  button, .nb, .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Remove hover effects on touch devices */
+  a:hover, button:hover {
+    text-decoration: none;
+    transform: none;
+  }
+  
+  /* Add active states for touch feedback */
+  a:active, button:active {
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
+  
+  /* Larger form inputs */
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 44px;
+  }
+}
+
+/* ── BOTTOM NAVIGATION FOR MOBILE ────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Move sidebar to bottom */
+  #sidebar, .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    width: 100%;
+    height: 60px;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0;
+    z-index: 400;
+    border-top: 1px solid var(--br);
+    border-right: none;
+  }
+  
+  /* Adjust main content for bottom nav */
+  #main, .main, #app {
+    bottom: 60px;
+    height: calc(100% - 60px - 48px);
+  }
+  
+  /* Bottom nav items */
+  #sidebar .nb, .sidebar .nb {
+    flex: 1;
+    flex-direction: column;
+    padding: 8px 4px;
+    height: 60px;
+    border-bottom: none;
+    border-left: 1px solid var(--br);
+    font-size: 10px;
+  }
+  
+  #sidebar .nb:first-child, .sidebar .nb:first-child {
+    border-left: none;
+  }
+  
+  #sidebar .nb .icon, .sidebar .nb .icon {
+    font-size: 20px;
+    margin-bottom: 2px;
+  }
+}
+
+/* ── MOBILE PANELS & MODALS ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Full-screen panels on mobile */
+  .panel, .modal, .popup {
+    position: fixed;
+    top: 48px;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0;
+    margin: 0;
+  }
+  
+  /* Swipeable panels */
+  .panel {
+    touch-action: pan-y;
+    overscroll-behavior: contain;
+  }
+  
+  /* Close button positioning */
+  .panel .close, .modal .close {
+    top: 8px;
+    right: 8px;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+}
+
+/* ── MOBILE FORMS ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Stack form fields */
+  .form-row, .field-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .field {
+    width: 100%;
+  }
+  
+  /* Larger touch targets for selects */
+  select {
+    height: 44px;
+  }
+  
+  /* Mobile-optimized inputs */
+  input[type="number"] {
+    font-size: 16px; /* Prevents zoom */
+  }
+  
+  /* Full-width buttons */
+  .btn, button[type="submit"] {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 16px;
+  }
+}
+
+/* ── MOBILE TABLES ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Horizontal scroll for tables */
+  table, .table-wrapper {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Compact table cells */
+  td, th {
+    padding: 8px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  
+  /* Sticky first column */
+  th:first-child, td:first-child {
+    position: sticky;
+    left: 0;
+    background: var(--bg);
+    z-index: 10;
+  }
+}
+
+/* ── MOBILE CHARTS ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Smaller chart heights */
+  canvas, .chart-container {
+    max-height: 250px;
+  }
+  
+  /* Touch-friendly chart controls */
+  .chart-controls button {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+}
+
+/* ── PWA INSTALL BANNER ────────────────────────────────────────────── */
+#pwa-install-banner {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ── OFFLINE INDICATOR ─────────────────────────────────────────────── */
+body.offline::before {
+  content: 'OFFLINE';
+  position: fixed;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--amber);
+  color: var(--bg);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  z-index: 500;
+  letter-spacing: 0.1em;
+}
+
+/* ── PULL-TO-REFRESH VISUAL ───────────────────────────────────────── */
+body.pull-to-refresh::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--gold);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  z-index: 500;
+}
+
+@keyframes spin {
+  to { transform: translateX(-50%) rotate(360deg); }
+}
+
+/* ── STANDALONE MODE ADJUSTMENTS ──────────────────────────────────── */
+@media (display-mode: standalone) {
+  /* Hide browser-specific UI */
+  #browser-warning {
+    display: none;
+  }
+  
+  /* Add safe area insets for notched phones */
+  #hdr {
+    padding-top: env(safe-area-inset-top);
+    height: calc(52px + env(safe-area-inset-top));
+  }
+  
+  #sidebar, .sidebar {
+    padding-bottom: env(safe-area-inset-bottom);
+    height: calc(60px + env(safe-area-inset-bottom));
+  }
+  
+  #main, .main, #app {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* ── HAPTIC FEEDBACK VISUAL ────────────────────────────────────────── */
+.long-pressed {
+  transform: scale(0.98);
+  transition: transform 0.1s;
+  background: var(--bg3) !important;
+}
+
+/* ── MOBILE SCROLLBAR ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
+  }
+  
+  /* Momentum scrolling */
+  .scrollable {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+}
+
+/* ── REDUCED MOTION (Accessibility) ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  #pwa-install-banner {
+    animation: none;
+  }
+  
+  body.pull-to-refresh::after {
+    animation: none;
+  }
+}
+
+/* ── DARK MODE ENHANCEMENTS (Mobile OLED) ─────────────────────────── */
+@media (max-width: 768px) and (prefers-color-scheme: dark) {
+  /* Deeper blacks for OLED screens */
+  :root {
+    --bg: #000000;
+    --bg2: #0a0a0a;
+    --bg3: #111111;
+  }
+}
+
+/* ── LANDSCAPE MODE ────────────────────────────────────────────────── */
+@media (max-width: 768px) and (orientation: landscape) {
+  #hdr {
+    height: 40px;
+  }
+  
+  #sidebar, .sidebar {
+    height: 50px;
+  }
+  
+  #main, .main, #app {
+    top: 40px;
+    bottom: 50px;
+    height: calc(100% - 90px);
+  }
+}
 .av{font-family:var(--mono);font-size:13px;font-weight:600}
 .av.gn{color:var(--green)}.av.rd{color:var(--red)}.av.gl{color:var(--gold)}.av.nt{color:var(--tx2)}
 #hpill{margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px;border-radius:3px;flex-shrink:0}
@@ -2584,6 +3082,108 @@ function analyzePattern(patternId) {
   setTimeout(() => { banner.className = ''; }, 10000);
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// STATISTICS HELPERS - PHASE 9: PURE TYPESCRIPT - NO FALLBACKS
+// ═══════════════════════════════════════════════════════════════════
+
+// Calculate P&L for a single trade - PURE TypeScript
+function calcPnL(t) {
+  const trade = {
+    direction: t.dir,
+    entryPrice: parseFloat(t.entry),
+    exitPrice: parseFloat(t.exit),
+    size: parseFloat(t.lots)
+  };
+  return window.tsBridge.calculatePnL(trade);
+}
+
+// Calculate R-multiple for a trade - PURE TypeScript
+function calcR(t) {
+  const trade = {
+    direction: t.dir,
+    entryPrice: parseFloat(t.entry),
+    exitPrice: parseFloat(t.exit),
+    size: parseFloat(t.lots)
+  };
+  return window.tsBridge.calculateR(trade, S.account, S.risk);
+}
+
+// Get comprehensive trading statistics - PURE TypeScript
+function getStats() {
+  const tsTrades = trades.map(t => ({
+    id: t.id || Date.now().toString(),
+    direction: t.dir,
+    entryPrice: parseFloat(t.entry),
+    exitPrice: parseFloat(t.exit) || 0,
+    size: parseFloat(t.lots),
+    pnl: t.pnl || 0,
+    outcome: t.outcome || 'PENDING',
+    status: t.exit ? 'closed' : 'open',
+    timestamp: new Date(t.date + ' ' + t.time).toISOString()
+  }));
+  
+  const stats = window.tsBridge.getTradingStatistics(tsTrades);
+  return {
+    tot: stats.totalTrades,
+    wins: stats.winningTrades,
+    losses: stats.losingTrades,
+    wr: stats.winRate,
+    avgR: stats.averageR,
+    totPnl: stats.totalPnL,
+    best: stats.bestTrade,
+    worst: stats.worstTrade,
+    cw: stats.maxConsecutiveWins,
+    cl: stats.maxConsecutiveLosses
+  };
+}
+
+// Filter trades for today - PURE TypeScript
+function todayTrades() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const tsTrades = trades.map(t => ({
+    id: t.id || Date.now().toString(),
+    direction: t.dir,
+    entryPrice: parseFloat(t.entry),
+    exitPrice: parseFloat(t.exit) || 0,
+    size: parseFloat(t.lots),
+    timestamp: new Date(t.date + ' ' + t.time).toISOString(),
+    outcome: t.outcome || 'PENDING'
+  }));
+  
+  const todaysTrades = window.tsBridge.filterTradesByDate(tsTrades, today);
+  
+  return todaysTrades.map(tt => trades.find(t => 
+    t.date === dk() && t.time === new Date(tt.timestamp).toTimeString().slice(0,5)
+  )).filter(Boolean);
+}
+
+// Calculate today's P&L - PURE TypeScript
+function todayPnL() {
+  const tsTrades = trades.map(t => ({
+    direction: t.dir,
+    entryPrice: parseFloat(t.entry),
+    exitPrice: parseFloat(t.exit) || 0,
+    size: parseFloat(t.lots),
+    timestamp: new Date(t.date + ' ' + t.time).toISOString()
+  }));
+  
+  return window.tsBridge.calculateTodayPnL(tsTrades);
+}
+
+// Calculate total P&L - PURE TypeScript
+function totalPnL() {
+  const tsTrades = trades.map(t => ({
+    direction: t.dir,
+    entryPrice: parseFloat(t.entry),
+    exitPrice: parseFloat(t.exit) || 0,
+    size: parseFloat(t.lots)
+  }));
+  
+  return window.tsBridge.calculateTotalPnL(tsTrades);
+}
+
 // View pattern details
 function viewPatternDetails(patternId) {
   const pattern = patterns.find(p => p.id === patternId);
@@ -3064,26 +3664,26 @@ function closeNotif() { document.getElementById('notif-banner').className = ''; 
   function totalPnL(){
     // Phase 7: Full TypeScript embodiment
     if (window.tsBridge && window.tsBridge.calculateTotalPnL) {
-      return window.tsBridge.calculateTotalPnL(trades);
-      const tsTrades = trades.map((t, idx) => ({
-        id: t.id || `trade-${idx}`,
-        direction: t.dir || t.direction || 'LONG',
-        entryPrice: parseFloat(t.entry) || 0,
-        exitPrice: parseFloat(t.exit) || 0,
-        sl: parseFloat(t.sl) || 0,
-        tp: parseFloat(t.tp) || 0,
-        size: parseFloat(t.lots) || 0,
-        date: t.date || dk(),
-        status: t.status || (t.exit ? 'closed' : 'open')
-      }));
-      return window.tsBridge.calculateTotalPnL(tsTrades);
-    } catch (e) {
-      console.warn('[TS] totalPnL fallback:', e.message);
+      try {
+        const tsTrades = trades.map((t, idx) => ({
+          id: t.id || `trade-${idx}`,
+          direction: t.dir || t.direction || 'LONG',
+          entryPrice: parseFloat(t.entry) || 0,
+          exitPrice: parseFloat(t.exit) || 0,
+          sl: parseFloat(t.sl) || 0,
+          tp: parseFloat(t.tp) || 0,
+          size: parseFloat(t.lots) || 0,
+          date: t.date || dk(),
+          status: t.status || (t.exit ? 'closed' : 'open')
+        }));
+        return window.tsBridge.calculateTotalPnL(tsTrades);
+      } catch (e) {
+        console.warn('[TS] totalPnL fallback:', e.message);
+      }
     }
+    // Vanilla JS fallback
+    return trades.reduce((a,t) => a + calcPnL(t), 0);
   }
-  // Vanilla JS fallback
-  return trades.reduce((a,t) => a + calcPnL(t), 0);
-}
 
 // ════════════════════════════════════════════════════════
 // TAB NAVIGATION
@@ -3218,7 +3818,8 @@ function updateCockpit() {
 }
 
 function generateCockpitBriefing() {
-  const t2 = eat();
+  // Use TypeScript bridge for time functions
+  const t2 = window.tsBridge.eat();
   const hh = String(t2.getHours()).padStart(2, '0');
   const mm = String(t2.getMinutes()).padStart(2, '0');
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
@@ -3227,14 +3828,14 @@ function generateCockpitBriefing() {
   const dayOfWeek = t2.getDay(); // 0 = Sunday, 6 = Saturday
   const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
   
-  // Get system data
+  // Get system data using TypeScript bridge
   const stats = getStats();
-  const todayPnL = todayTrades().reduce((sum, t) => sum + calcPnL(t), 0);
-  const totalPnL = trades.reduce((sum, t) => sum + calcPnL(t), 0);
+  const todayPnL = todayPnL();
+  const totalPnL = totalPnL();
   const todayTradesCount = todayTrades().length;
   const account = S.account || 0;
-  const session = curSess();
-  const scannerReady = checkedCount() === 8;
+  const session = window.tsBridge.curSess();
+  const scannerReady = window.tsBridge.checkedCount() === 8;
   
   // Risk analysis
   const dailyStop = account * S.personalstop / 100;
@@ -3247,9 +3848,22 @@ function generateCockpitBriefing() {
   briefing += '<div style="font-size:13px;color:var(--tx2)">' + today + ' • ' + hh + ':' + mm + ' EAT • ' + session.name + '</div>';
   briefing += '</div>';
   
+  // Time-aware greeting - Fix: Use actual hour from date object
+  const currentHour = t2.getHours();
+  let greeting = '👋 Good Evening Sir';
+  if (currentHour >= 5 && currentHour < 12) {
+    greeting = '🌅 Good Morning Sir';
+  } else if (currentHour >= 12 && currentHour < 17) {
+    greeting = '☀️ Good Afternoon Sir';
+  } else if (currentHour >= 17 && currentHour < 21) {
+    greeting = '🌆 Good Evening Sir';
+  } else {
+    greeting = '🌙 Good Night Sir';
+  }
+  
   // Assistant Welcome
   briefing += '<div style="padding:16px;background:' + (isWeekend ? 'var(--gn2)' : 'var(--gn2)') + ';border-radius:8px;border:1px solid ' + (isWeekend ? 'var(--green)' : 'var(--green)') + ';margin-bottom:16px">';
-  briefing += '<div style="font-size:14px;font-weight:600;color:var(--green);margin-bottom:8px">' + (isWeekend ? '🌴 Happy Weekend, Sir!' : '👋 Good Evening Sir') + '</div>';
+  briefing += '<div style="font-size:14px;font-weight:600;color:var(--green);margin-bottom:8px">' + (isWeekend ? '🌴 Happy Weekend, Sir!' : greeting) + '</div>';
   briefing += '<div style="font-size:12px;line-height:1.5;color:var(--tx)">';
   briefing += 'I\'m monitoring your entire trading system. ';
   if (isWeekend) {
@@ -7722,4 +8336,271 @@ document.addEventListener('keydown', e => {
 <!-- TypeScript Integration Adapter - Loads as enhancement layer -->
 <script type="module" src="./typescript-adapter.js"></script>
 
-</body></html>
+<!-- ═══════════════════════════════════════════════════════════════════
+     MOBILE PWA REGISTRATION & OPTIMIZATIONS
+     ═══════════════════════════════════════════════════════════════════ -->
+<script>
+  // Register Service Worker for PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then((registration) => {
+          console.log('[PWA] Service Worker registered:', registration.scope);
+          
+          // Listen for updates
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            console.log('[PWA] New Service Worker installing...');
+          });
+        })
+        .catch((error) => {
+          console.log('[PWA] Service Worker registration failed:', error);
+        });
+    });
+  }
+  
+  // Request notification permission
+  if ('Notification' in window) {
+    Notification.requestPermission().then((permission) => {
+      console.log('[PWA] Notification permission:', permission);
+    });
+  }
+  
+  // Mobile viewport height fix for iOS Safari
+  function setMobileViewportHeight() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }
+  
+  window.addEventListener('resize', setMobileViewportHeight);
+  window.addEventListener('orientationchange', setMobileViewportHeight);
+  setMobileViewportHeight();
+  
+  // Touch gesture support for mobile
+  let touchStartX = 0;
+  let touchStartY = 0;
+  
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  
+  document.addEventListener('touchend', (e) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    
+    // Horizontal swipe detection (switch tabs)
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        // Swipe right - previous tab
+        navigateToPrevTab();
+      } else {
+        // Swipe left - next tab
+        navigateToNextTab();
+      }
+    }
+  }, { passive: true });
+  
+  // Tab navigation functions
+  function navigateToNextTab() {
+    const tabs = ['scanner', 'cockpit', 'journal', 'prop', 'coach'];
+    const currentTab = document.querySelector('.nb.on')?.id.replace('nb-', '') || 'scanner';
+    const currentIndex = tabs.indexOf(currentTab);
+    const nextTab = tabs[(currentIndex + 1) % tabs.length];
+    go(nextTab);
+  }
+  
+  function navigateToPrevTab() {
+    const tabs = ['scanner', 'cockpit', 'journal', 'prop', 'coach'];
+    const currentTab = document.querySelector('.nb.on')?.id.replace('nb-', '') || 'scanner';
+    const currentIndex = tabs.indexOf(currentTab);
+    const prevTab = tabs[(currentIndex - 1 + tabs.length) % tabs.length];
+    go(prevTab);
+  }
+  
+  // Pull-to-refresh detection (uses touchStartY from above)
+  let pullStarted = false;
+  
+  document.addEventListener('touchstart', (e) => {
+    if (window.scrollY === 0) {
+      touchStartY = e.touches[0].clientY;
+      pullStarted = true;
+    }
+  }, { passive: true });
+  
+  document.addEventListener('touchmove', (e) => {
+    if (pullStarted && window.scrollY === 0) {
+      const pullDistance = e.touches[0].clientY - touchStartY;
+      if (pullDistance > 100) {
+        // Show pull-to-refresh indicator
+        document.body.classList.add('pull-to-refresh');
+      }
+    }
+  }, { passive: true });
+  
+  document.addEventListener('touchend', () => {
+    if (document.body.classList.contains('pull-to-refresh')) {
+      // Refresh data
+      tickHeader();
+      updateScanGuard();
+      document.body.classList.remove('pull-to-refresh');
+    }
+    pullStarted = false;
+  });
+  
+  // Long press detection for quick actions
+  let longPressTimer;
+  
+  document.addEventListener('touchstart', (e) => {
+    if (e.target.closest('.trade-item')) {
+      longPressTimer = setTimeout(() => {
+        e.target.closest('.trade-item').classList.add('long-pressed');
+        // Show context menu
+        showTradeContextMenu(e.target.closest('.trade-item'));
+      }, 500);
+    }
+  }, { passive: true });
+  
+  document.addEventListener('touchend', () => {
+    clearTimeout(longPressTimer);
+    document.querySelectorAll('.long-pressed').forEach(el => {
+      el.classList.remove('long-pressed');
+    });
+  });
+  
+  function showTradeContextMenu(tradeElement) {
+    // Vibrate if supported
+    if (navigator.vibrate) {
+      navigator.vibrate(50);
+    }
+    // Context menu logic here
+  }
+  
+  // Install prompt for PWA
+  let deferredPrompt;
+  
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    // Show install button after 5 seconds
+    setTimeout(() => {
+      showInstallPrompt();
+    }, 5000);
+  });
+  
+  function showInstallPrompt() {
+    const installBanner = document.createElement('div');
+    installBanner.id = 'pwa-install-banner';
+    installBanner.innerHTML = `
+      <div style="
+        position: fixed;
+        bottom: 80px;
+        left: 16px;
+        right: 16px;
+        background: linear-gradient(135deg, #d4a017 0%, #e6b52c 100%);
+        color: #08090a;
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(212, 160, 23, 0.4);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-weight: 600;
+      ">
+        <span>📱 Install Gold Trader App</span>
+        <div>
+          <button id="pwa-install-btn" style="
+            background: #08090a;
+            color: #d4a017;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-right: 8px;
+            cursor: pointer;
+          ">Install</button>
+          <button id="pwa-dismiss-btn" style="
+            background: transparent;
+            color: #08090a;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+          ">✕</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(installBanner);
+    
+    document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`[PWA] User ${outcome === 'accepted' ? 'installed' : 'dismissed'} the PWA`);
+      installBanner.remove();
+    });
+    
+    document.getElementById('pwa-dismiss-btn').addEventListener('click', () => {
+      installBanner.remove();
+    });
+  }
+  
+  // App installed event
+  window.addEventListener('appinstalled', () => {
+    console.log('[PWA] App was installed');
+    deferredPrompt = null;
+    
+    // Track installation
+    if (window.gtag) {
+      gtag('event', 'pwa_install', {
+        event_category: 'engagement',
+        event_label: 'PWA Installed'
+      });
+    }
+  });
+  
+  // Online/offline detection
+  window.addEventListener('online', () => {
+    console.log('[PWA] Back online');
+    document.body.classList.remove('offline');
+    toast('Back online', 'success');
+    
+    // Sync any pending data
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'SYNC_PENDING_DATA'
+      });
+    }
+  });
+  
+  window.addEventListener('offline', () => {
+    console.log('[PWA] Gone offline');
+    document.body.classList.add('offline');
+    toast('Offline mode - data will sync when connected', 'warning');
+  });
+  
+  // Prevent zoom on double-tap (iOS)
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      e.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+  
+  // Add to home screen tracking
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    console.log('[PWA] Running in standalone mode');
+    document.body.classList.add('standalone-mode');
+  }
+  
+  console.log('[PWA] Mobile optimizations loaded');
+</script>
+
+</body>
+</html>

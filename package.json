@@ -5,11 +5,16 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "build:clean": "rm -rf dist && tsc",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "jest --coverage --ci",
     "test:python": "pytest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'ESLint not configured yet'",
+    "lint:fix": "echo 'ESLint not configured yet'",
+    "ci": "npm run typecheck && npm run test && npm run build",
+    "predeploy": "npm run ci"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",

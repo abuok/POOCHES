@@ -394,6 +394,219 @@ export class StateManager {
     }
     return hasData;
   }
+
+  /**
+   * PHASE 8: Complete HTML Integration Methods
+   * These methods provide direct compatibility with HTML layer
+   */
+
+  /**
+   * Load all state from localStorage (HTML-compatible)
+   * Returns complete state object for HTML consumption
+   */
+  public loadAllState(): { S: Record<string, any>; trades: TradeEntry[]; news: any[]; rChecks: Record<string, boolean>; chatHist: any[] } {
+    const savedS = localStorage.getItem('S');
+    const savedTrades = localStorage.getItem('trades');
+    const savedNews = localStorage.getItem('news');
+    const savedRChecks = localStorage.getItem('rChecks');
+    const savedChatHist = localStorage.getItem('chatHist');
+
+    return {
+      S: savedS ? JSON.parse(savedS) : {},
+      trades: savedTrades ? JSON.parse(savedTrades) : [],
+      news: savedNews ? JSON.parse(savedNews) : [],
+      rChecks: savedRChecks ? JSON.parse(savedRChecks) : {},
+      chatHist: savedChatHist ? JSON.parse(savedChatHist) : []
+    };
+  }
+
+  /**
+   * Save all state to localStorage (HTML-compatible)
+   * Mirrors the saveAll() function from HTML
+   */
+  public saveAllState(S: Record<string, any>, trades: TradeEntry[], news: any[], rChecks: Record<string, boolean>, chatHist: any[]): void {
+    // Sync to TypeScript state first
+    this.state.accountSettings = {
+      ...this.state.accountSettings,
+      ...S
+    };
+    this.state.todayTrades = trades.map(t => this.convertToTradeEntry(t));
+
+    // Save to localStorage
+    localStorage.setItem('S', JSON.stringify(S));
+    localStorage.setItem('trades', JSON.stringify(trades));
+    localStorage.setItem('news', JSON.stringify(news));
+    localStorage.setItem('rChecks', JSON.stringify(rChecks));
+    localStorage.setItem('chatHist', JSON.stringify(chatHist));
+
+    // Persist TypeScript state
+    this.saveState();
+
+    console.log('[TS] Saved all state:', trades.length, 'trades');
+  }
+
+  /**
+   * Convert legacy trade format to TradeEntry
+   */
+  private convertToTradeEntry(t: any): TradeEntry {
+    return {
+      id: t.id || Date.now().toString(),
+      direction: t.dir === 'LONG' ? 'LONG' : 'SHORT',
+      entryPrice: parseFloat(t.entry) || 0,
+      exitPrice: parseFloat(t.exit) || 0,
+      size: parseFloat(t.lots) || 0,
+      pnl: t.pnl || 0,
+      outcome: t.outcome || 'PENDING',
+      status: t.exit ? 'closed' : 'open',
+      timestamp: new Date(t.date + ' ' + t.time).toISOString(),
+      strategy: t.strategy,
+      notes: t.notes
+    };
+  }
+
+  /**
+   * Log a new trade (HTML logTrade() equivalent)
+   */
+  public logTrade(tradeData: {
+    dir: 'LONG' | 'SHORT';
+    entry: string;
+    exit?: string;
+    lots: string;
+    outcome?: string;
+    date: string;
+    time: string;
+    strategy?: string;
+    notes?: string;
+  }): TradeEntry | null {
+    try {
+      const trade: TradeEntry = {
+        id: Date.now().toString(),
+        direction: tradeData.dir,
+        entryPrice: parseFloat(tradeData.entry),
+        exitPrice: tradeData.exit ? parseFloat(tradeData.exit) : undefined,
+        size: parseFloat(tradeData.lots),
+        outcome: tradeData.outcome as any || 'PENDING',
+        status: tradeData.exit ? 'closed' : 'open',
+        timestamp: new Date(tradeData.date + ' ' + tradeData.time).toISOString(),
+        strategy: tradeData.strategy,
+        notes: tradeData.notes
+      };
+
+      this.addTrade(trade);
+      console.log('[TS] Trade logged:', trade.id);
+      return trade;
+    } catch (err) {
+      console.error('[TS] Failed to log trade:', err);
+      return null;
+    }
+  }
+
+  /**
+   * Delete a trade (HTML delTrade() equivalent)
+   */
+  public delTrade(tradeId: string): boolean {
+    const index = this.state.todayTrades.findIndex(t => t.id === tradeId);
+    if (index !== -1) {
+      this.state.todayTrades.splice(index, 1);
+      this.saveState();
+      this.notifyListeners();
+      console.log('[TS] Trade deleted:', tradeId);
+      return true;
+    }
+    console.warn('[TS] Trade not found for deletion:', tradeId);
+    return false;
+  }
+
+  /**
+   * Update trade outcome and exit price
+   */
+  public updateTradeOutcome(tradeId: string, outcome: 'WIN' | 'LOSS' | 'WIN1' | 'BE' | 'PENDING', exitPrice?: number): boolean {
+    const trade = this.state.todayTrades.find(t => t.id === tradeId);
+    if (!trade) {
+      console.warn('[TS] Trade not found for update:', tradeId);
+      return false;
+    }
+
+    trade.outcome = outcome;
+    if (exitPrice !== undefined) {
+      trade.exitPrice = exitPrice;
+      trade.status = 'closed';
+
+      // Calculate PnL
+      const direction = trade.direction === 'LONG' ? 1 : -1;
+      trade.pnl = (trade.exitPrice - trade.entryPrice) * direction * trade.size * 100;
+    }
+
+    this.saveState();
+    this.notifyListeners();
+    console.log('[TS] Trade updated:', tradeId, outcome);
+    return true;
+  }
+
+  /**
+   * Get date key for today (dk() equivalent)
+   */
+  public getTodayKey(): string {
+    const d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+
+  /**
+   * Get Nairobi timezone date (eat() equivalent)
+   */
+  public getNairobiDate(): Date {
+    return new Date(new Date().toLocaleString('en-US', { timeZone: 'Africa/Nairobi' }));
+  }
+
+  /**
+   * Calculate current session hours (eatH() equivalent)
+   */
+  public getSessionHour(): number {
+    const t = this.getNairobiDate();
+    return t.getHours() + t.getMinutes() / 60 + t.getSeconds() / 3600;
+  }
+
+  /**
+   * Format countdown timer (fmtCD() equivalent)
+   */
+  public formatCountdown(seconds: number): string {
+    const hrs = String(Math.floor(seconds / 3600)).padStart(2, '0');
+    const mins = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+    const secs = String(seconds % 60).padStart(2, '0');
+    return `${hrs}:${mins}:${secs}`;
+  }
+
+  /**
+   * Get seconds until next session
+   */
+  public getSecondsToNextSession(): number {
+    const hour = this.getSessionHour();
+    const sessions = [
+      { end: 3 },
+      { end: 10 },
+      { end: 16 },
+      { end: 21 },
+      { end: 23 },
+      { end: 24 }
+    ];
+
+    for (const session of sessions) {
+      if (hour < session.end) {
+        const endSeconds = session.end * 3600;
+        const nowSeconds = hour * 3600;
+        return endSeconds - nowSeconds;
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * PHASE 8 COMPLETE: Full HTML Integration
+   * All legacy functions now have TypeScript equivalents
+   */
+  public getVersion(): string {
+    return '2.0.0-FULL-TS';
+  }
 }
 
 export const stateManager = StateManager.getInstance();

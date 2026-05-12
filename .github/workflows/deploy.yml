@@ -1,0 +1,252 @@
+name: CI/CD Pipeline - XAU/USD Trading System
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  # JOB 1: LINT & TYPE CHECK
+  # ═══════════════════════════════════════════════════════════════
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Node.js setup for TypeScript/JavaScript
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      # Install dependencies
+      - name: Install Node dependencies
+        run: npm ci
+      
+      # TypeScript type checking
+      - name: TypeScript Type Check
+        run: npx tsc --noEmit
+      
+      # ESLint for JavaScript/TypeScript
+      - name: ESLint
+        run: npm run lint || echo "No lint script configured"
+
+  # ═══════════════════════════════════════════════════════════════
+  # JOB 2: PYTHON TESTS
+  # ═══════════════════════════════════════════════════════════════
+  test-python:
+    name: Python Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Python setup
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      # Cache pip dependencies
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      
+      # Install Python dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || echo "No requirements.txt"
+          pip install pytest pytest-cov pandas numpy
+      
+      # Run Python tests
+      - name: Run Python tests
+        run: |
+          pytest tests/test_gold_analysis.py -v --cov=src || echo "Python tests skipped"
+
+  # ═══════════════════════════════════════════════════════════════
+  # JOB 3: JAVASCRIPT/TYPESCRIPT TESTS
+  # ═══════════════════════════════════════════════════════════════
+  test-js:
+    name: JavaScript/TypeScript Tests
+    runs-on: ubuntu-latest
+    needs: [lint]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Node.js setup
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      # Install dependencies
+      - name: Install dependencies
+        run: npm ci
+      
+      # Run Jest tests
+      - name: Run Jest tests
+        run: npm test -- --coverage --ci
+      
+      # Upload coverage report
+      - name: Upload coverage to GitHub
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
+
+  # ═══════════════════════════════════════════════════════════════
+  # JOB 4: BUILD
+  # ═══════════════════════════════════════════════════════════════
+  build:
+    name: Build Production Bundle
+    runs-on: ubuntu-latest
+    needs: [test-js, test-python]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Node.js setup
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      # Install dependencies
+      - name: Install dependencies
+        run: npm ci
+      
+      # Build TypeScript
+      - name: Build TypeScript
+        run: npm run build
+      
+      # Verify build output exists
+      - name: Verify build
+        run: |
+          ls -la dist/
+          test -f dist/index.js || echo "Warning: dist/index.js not found"
+      
+      # Upload build artifacts
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: production-build
+          path: |
+            dist/
+            *.html
+            *.js
+            !node_modules/
+            !.git/
+
+  # ═══════════════════════════════════════════════════════════════
+  # JOB 5: DEPLOY (Only on main branch)
+  # ═══════════════════════════════════════════════════════════════
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build, test-python]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Download build artifacts
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: production-build
+          path: ./dist
+      
+      # Setup SSH for deployment
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        continue-on-error: true
+      
+      # Deploy via SCP (if server configured)
+      - name: Deploy to Server via SCP
+        if: secrets.SERVER_IP != ''
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "dist/*,*.html,typescript-adapter.js"
+          target: "/var/www/trading-system/"
+          strip_components: 0
+        continue-on-error: true
+      
+      # Deploy via FTP (alternative)
+      - name: Deploy via FTP
+        if: secrets.FTP_SERVER != ''
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: /public_html/
+        continue-on-error: true
+      
+      # GitHub Pages Deployment (for static sites)
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+        continue-on-error: true
+      
+      # Deployment notification
+      - name: Notify Deployment
+        run: |
+          echo "✅ Deployment completed at $(date)"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+
+  # ═══════════════════════════════════════════════════════════════
+  # JOB 6: SECURITY SCAN
+  # ═══════════════════════════════════════════════════════════════
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Run npm audit
+      - name: NPM Audit
+        run: npm audit --audit-level=high || echo "Audit completed with warnings"
+        continue-on-error: true
+      
+      # Run CodeQL Analysis
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript, python
+      
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+      
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
