@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Cockpit Debug</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #08090a; color: #e2ddd4; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #d4a017; border-radius: 4px; }
+        .pass { background: rgba(0,201,122,.1); border-color: #00c97a; }
+        .fail { background: rgba(255,77,77,.1); border-color: #ff4d4d; }
+        .warn { background: rgba(245,158,11,.1); border-color: #f59e0b; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Cockpit System Diagnostics</h1>
+    <div id="results"></div>
+
+    <script>
+        const results = document.getElementById('results');
+        
+        function addTest(name, status, details) {
+            const div = document.createElement('div');
+            div.className = `test ${status}`;
+            div.innerHTML = `<strong>${name}</strong><br>${details}`;
+            results.appendChild(div);
+        }
+
+        // Test 1: Check if window.tsBridge exists
+        setTimeout(() => {
+            addTest(
+                'TypeScript Bridge Available',
+                typeof window.tsBridge !== 'undefined' ? 'pass' : 'fail',
+                `window.tsBridge is ${typeof window.tsBridge !== 'undefined' ? 'defined' : 'NOT defined'}`
+            );
+            
+            if (window.tsBridge) {
+                addTest(
+                    'Bridge Methods',
+                    Object.keys(window.tsBridge).length > 0 ? 'pass' : 'fail',
+                    `Methods: ${Object.keys(window.tsBridge).join(', ')}`
+                );
+                
+                // Test 2: Check critical functions
+                const criticalFunctions = ['eat', 'eatH', 'curSess', 'checkedCount'];
+                criticalFunctions.forEach(func => {
+                    const status = typeof window.tsBridge[func] === 'function' ? 'pass' : 'fail';
+                    addTest(
+                        `Function: ${func}`,
+                        status,
+                        `window.tsBridge.${func} is ${typeof window.tsBridge[func]}`
+                    );
+                });
+                
+                // Test 3: Try calling functions
+                try {
+                    const time = window.tsBridge.eat();
+                    addTest(
+                        'eat() Function Call',
+                        'pass',
+                        `Returns: ${time.toString()}`
+                    );
+                } catch (e) {
+                    addTest(
+                        'eat() Function Call',
+                        'fail',
+                        `Error: ${e.message}`
+                    );
+                }
+                
+                try {
+                    const session = window.tsBridge.curSess();
+                    addTest(
+                        'curSess() Function Call',
+                        'pass',
+                        `Returns: ${JSON.stringify(session)}`
+                    );
+                } catch (e) {
+                    addTest(
+                        'curSess() Function Call',
+                        'fail',
+                        `Error: ${e.message}`
+                    );
+                }
+            }
+            
+            // Test 4: Load TypeScript adapter manually
+            addTest(
+                'Loading TypeScript Adapter...',
+                'warn',
+                'Attempting to load adapter...'
+            );
+            
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.src = './typescript-adapter.js';
+            script.onload = () => {
+                setTimeout(() => {
+                    addTest(
+                        'Adapter Load Result',
+                        typeof window.tsBridge !== 'undefined' ? 'pass' : 'fail',
+                        `After load: window.tsBridge is ${typeof window.tsBridge !== 'undefined' ? 'defined' : 'still NOT defined'}`
+                    );
+                }, 1000);
+            };
+            script.onerror = (e) => {
+                addTest(
+                    'Adapter Load Result',
+                    'fail',
+                    `Failed to load: ${e.message}`
+                );
+            };
+            document.head.appendChild(script);
+            
+        }, 100);
+    </script>
+</body>
+</html>

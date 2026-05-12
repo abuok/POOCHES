@@ -3821,24 +3821,50 @@ function updateCockpit() {
 }
 
 function generateCockpitBriefing() {
-  // Use TypeScript bridge for time functions
-  const t2 = window.tsBridge.eat();
-  const hh = String(t2.getHours()).padStart(2, '0');
-  const mm = String(t2.getMinutes()).padStart(2, '0');
-  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+  // FALLBACK: Use local functions if TypeScript bridge not available
+  let t2, hh, mm, today, dayOfWeek, isWeekend, stats, todayPnL, totalPnL, todayTradesCount, account, session, scannerReady;
   
-  // Check if it's weekend
-  const dayOfWeek = t2.getDay(); // 0 = Sunday, 6 = Saturday
-  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+  try {
+    if (window.tsBridge && window.tsBridge.eat) {
+      t2 = window.tsBridge.eat();
+      hh = String(t2.getHours()).padStart(2, '0');
+      mm = String(t2.getMinutes()).padStart(2, '0');
+      today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+      dayOfWeek = t2.getDay();
+      isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      session = window.tsBridge.curSess();
+      scannerReady = window.tsBridge.checkedCount() === 8;
+    } else {
+      throw new Error('TypeScript bridge not available');
+    }
+  } catch (error) {
+    console.warn('🔧 Using fallback functions for cockpit briefing:', error.message);
+    // Fallback to HTML functions
+    t2 = eat();
+    hh = String(t2.getHours()).padStart(2, '0');
+    mm = String(t2.getMinutes()).padStart(2, '0');
+    today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+    dayOfWeek = t2.getDay();
+    isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    session = curSess();
+    scannerReady = checkedCount() === 8;
+  }
   
-  // Get system data using TypeScript bridge
-  const stats = getStats();
-  const todayPnL = todayPnL();
-  const totalPnL = totalPnL();
-  const todayTradesCount = todayTrades().length;
-  const account = S.account || 0;
-  const session = window.tsBridge.curSess();
-  const scannerReady = window.tsBridge.checkedCount() === 8;
+  // Get system data (these should work regardless)
+  try {
+    stats = getStats();
+    todayPnL = todayPnL();
+    totalPnL = totalPnL();
+    todayTradesCount = todayTrades().length;
+    account = S.account || 0;
+  } catch (error) {
+    console.warn('🔧 Using fallback statistics:', error.message);
+    stats = { tot: 0, wins: 0, losses: 0, wr: 0, avgR: 0, totPnl: 0, best: 0, worst: 0, cw: 0, cl: 0 };
+    todayPnL = 0;
+    totalPnL = 0;
+    todayTradesCount = 0;
+    account = S.account || 0;
+  }
   
   // Risk analysis
   const dailyStop = account * S.personalstop / 100;
@@ -8336,32 +8362,87 @@ document.addEventListener('keydown', e => {
 });
 </script>
 
-<!-- Debug Script - Check if fixes are loaded -->
+<!-- Comprehensive Debug Script - Diagnose Cockpit Issues -->
 <script>
-console.log('🔍 DEBUG: HTML loaded, checking fixes...');
-console.log('🔍 DEBUG: Current hour:', new Date().getHours());
+console.log('🔍 DEBUG: HTML loaded, starting comprehensive diagnosis...');
 
-// Test greeting logic immediately
-const testHour = new Date().getHours();
-let testGreeting = '👋 Good Evening Sir';
-if (testHour >= 5 && testHour < 12) {
-    testGreeting = '🌅 Good Morning Sir';
-} else if (testHour >= 12 && testHour < 17) {
-    testGreeting = '☀️ Good Afternoon Sir';
-} else if (testHour >= 17 && testHour < 21) {
-    testGreeting = '🌆 Good Evening Sir';
-} else {
-    testGreeting = '🌙 Good Night Sir';
-}
-console.log('🔍 DEBUG: Test greeting:', testGreeting);
-
-// Check TypeScript bridge after delay
+// Test basic functions
 setTimeout(() => {
-    console.log('🔍 DEBUG: TypeScript bridge available:', typeof window.tsBridge !== 'undefined');
+    console.log('🔍 DEBUG: === BASIC FUNCTION TESTS ===');
+    
+    // Test HTML functions
+    console.log('🔍 eat():', typeof eat, eat ? eat() : 'NOT DEFINED');
+    console.log('🔍 curSess():', typeof curSess, curSess ? curSess() : 'NOT DEFINED');
+    console.log('🔍 checkedCount():', typeof checkedCount, checkedCount ? checkedCount() : 'NOT DEFINED');
+    console.log('🔍 getStats():', typeof getStats, getStats ? 'SUCCESS' : 'NOT DEFINED');
+    console.log('🔍 todayTrades():', typeof todayTrades, todayTrades ? todayTrades().length + ' trades' : 'NOT DEFINED');
+    
+    // Test TypeScript bridge
+    console.log('🔍 DEBUG: === TYPESCRIPT BRIDGE TESTS ===');
+    console.log('🔍 window.tsBridge available:', typeof window.tsBridge !== 'undefined');
+    
     if (window.tsBridge) {
-        console.log('🔍 DEBUG: Bridge methods:', Object.keys(window.tsBridge));
+        console.log('🔍 Bridge methods:', Object.keys(window.tsBridge));
+        
+        // Test critical bridge functions
+        try {
+            console.log('🔍 tsBridge.eat():', window.tsBridge.eat ? window.tsBridge.eat() : 'NOT DEFINED');
+        } catch (e) {
+            console.error('🔍 tsBridge.eat() ERROR:', e.message);
+        }
+        
+        try {
+            console.log('🔍 tsBridge.curSess():', window.tsBridge.curSess ? window.tsBridge.curSess() : 'NOT DEFINED');
+        } catch (e) {
+            console.error('🔍 tsBridge.curSess() ERROR:', e.message);
+        }
+        
+        try {
+            console.log('🔍 tsBridge.checkedCount():', window.tsBridge.checkedCount ? window.tsBridge.checkedCount() : 'NOT DEFINED');
+        } catch (e) {
+            console.error('🔍 tsBridge.checkedCount() ERROR:', e.message);
+        }
     }
-}, 1000);
+    
+    // Test cockpit specifically
+    console.log('🔍 DEBUG: === COCKPIT SPECIFIC TESTS ===');
+    const cockpitElement = document.getElementById('cockpit-briefing');
+    console.log('🔍 Cockpit element found:', !!cockpitElement);
+    
+    if (cockpitElement) {
+        console.log('🔍 Cockpit current content length:', cockpitElement.innerHTML.length);
+        console.log('🔍 Cockpit visible:', cockpitElement.style.display !== 'none');
+    }
+    
+    // Test updateCockpit function
+    console.log('🔍 updateCockpit():', typeof updateCockpit);
+    if (typeof updateCockpit === 'function') {
+        try {
+            console.log('🔍 Attempting to update cockpit...');
+            updateCockpit();
+            console.log('🔍 Cockpit update completed');
+        } catch (e) {
+            console.error('🔍 Cockpit update ERROR:', e.message);
+            console.error('🔍 Full error:', e);
+        }
+    }
+    
+    // Test generateCockpitBriefing directly
+    console.log('🔍 generateCockpitBriefing():', typeof generateCockpitBriefing);
+    if (typeof generateCockpitBriefing === 'function') {
+        try {
+            console.log('🔍 Testing generateCockpitBriefing...');
+            const briefing = generateCockpitBriefing();
+            console.log('🔍 Briefing generated, length:', briefing.length);
+            console.log('🔍 Briefing preview:', briefing.substring(0, 200) + '...');
+        } catch (e) {
+            console.error('🔍 generateCockpitBriefing ERROR:', e.message);
+            console.error('🔍 Full error:', e);
+        }
+    }
+    
+    console.log('🔍 DEBUG: === DIAGNOSIS COMPLETE ===');
+}, 2000);
 </script>
 
 <!-- TypeScript Integration Adapter - Loads as enhancement layer -->
