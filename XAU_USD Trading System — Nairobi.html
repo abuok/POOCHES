@@ -30,9 +30,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   
-  <link href="./XAU_USD Trading System — Nairobi_files/css2" rel="stylesheet">
-  <script src="./XAU_USD Trading System — Nairobi_files/chart.js.download"></script>
-  <script src="./XAU_USD Trading System — Nairobi_files/chart.umd.js.download"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{
   --bg:#08090a;--bg2:#0f1210;--bg3:#161a14;--bg4:#1c201a;--bg5:#222620;
@@ -568,7 +567,7 @@ body.pull-to-refresh::after {
 .pt-large{font-size:14px;margin-bottom:12px}
 
 /* ── MAIN ─────────────────────────────────────────── */
-#main{position:fixed;top:52px;left:56px;right:320px;bottom:0;overflow:hidden}
+#main{position:fixed;top:52px;left:56px;right:0;bottom:0;overflow:auto}
 .hidden{display:none!important}
 .lp-section-label-spaced{margin-top:4px}
 .tag-live{color:var(--green);font-size:8px}
@@ -1804,7 +1803,7 @@ table.jt tr.tw td{background:rgba(0,201,122,.04)}table.jt tr.tl td{background:rg
 </main>
 
 <!-- FULL-SCREEN ROUTINE TIMELINE -->
-<div id="routine-timeline-full" style="position:fixed;top:52px;right:0;bottom:0;width:320px;background:var(--bg2);border-left:1px solid var(--br);z-index:150;display:flex;flex-direction:column">
+<div id="routine-timeline-full" style="position:fixed;top:52px;right:0;bottom:0;width:320px;background:var(--bg2);border-left:1px solid var(--br);z-index:150;display:none;flex-direction:column">
   <div id="routine-header" style="padding: 12px; background: var(--bg3); border-bottom: 1px solid var(--br);"><div class="ct" style="margin:0;font-size:11px">📅 ROUTINE TIMELINE <span style="font-size:9px;color:var(--tx3)">— NAIROBI EAT</span></div></div>
   <div id="ck-rtline-full" style="flex:1;overflow-y:auto;padding:12px"><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="cc ck" style="background: var(--bg3); border-color: var(--green); border: 1px solid var(--green); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--green)">08:30</div><div style="font-size:12px;font-weight:700;color:var(--tx)">Wake Up &amp; Mental Prep</div><div style="color:var(--green);font-size:14px">✓</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">Pre-Market</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Review yesterday's journal. Check headspace. Stressed = reduced size or no-trade day.</div></div><div class="cc ck" style="background: var(--bg3); border-color: var(--green); border: 1px solid var(--green); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--green)">08:45</div><div style="font-size:12px;font-weight:700;color:var(--tx)">Economic Calendar Check</div><div style="color:var(--green);font-size:14px">✓</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">Pre-Market</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Open Forex Factory. Filter USD + Gold red events. Write exact EAT times.</div></div><div class="cc ck" style="background: var(--bg3); border-color: var(--green); border: 1px solid var(--green); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--green)">09:00</div><div style="font-size:12px;font-weight:700;color:var(--tx)">H1 &amp; H4 Top-Down Analysis</div><div style="color:var(--green);font-size:14px">✓</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">Pre-Market</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Daily &gt; H4 &gt; H1. Is EMA50 above EMA200? Identify bias. Where are key swing levels?</div></div><div class="cc ck" style="background: var(--bg3); border-color: var(--green); border: 1px solid var(--green); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--green)">09:30</div><div style="font-size:12px;font-weight:700;color:var(--tx)">Draw Key Levels</div><div style="color:var(--green);font-size:14px">✓</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">Pre-Market</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Previous day H/L. EMA20/50/200 prices on H1. Nearest round numbers.</div></div><div class="cc ck" style="background: var(--bg3); border-color: var(--green); border: 1px solid var(--green); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--green)">09:45</div><div style="font-size:12px;font-weight:700;color:var(--tx)">ATR Check &amp; Position Sizing</div><div style="color:var(--green);font-size:14px">✓</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">Pre-Market</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Note H1 ATR14 and M15 ATR14. H1 ATR &gt; $25 = high vol = 0.5% risk. Calculate lots.</div></div><div class="cc ck" style="background: var(--bg3); border-color: var(--green); border: 1px solid var(--green); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--green)">09:50</div><div style="font-size:12px;font-weight:700;color:var(--tx)">Account &amp; Drawdown Check</div><div style="color:var(--green);font-size:14px">✓</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">Pre-Market</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Record balance. Daily limit remaining? Challenge target remaining?</div></div><div class="cc ck" style="background: var(--bg3); border-color: var(--green); border: 1px solid var(--green); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--green)">09:55</div><div style="font-size:12px;font-weight:700;color:var(--tx)">Platform Ready Check</div><div style="color:var(--green);font-size:14px">✓</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">Pre-Market</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Switch to M15. All 6 indicators showing. Spread normal (&lt;$0.40). Ready.</div></div><div class="cc ck" style="background: var(--bg3); border-color: var(--green); border: 1px solid var(--green); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--green)">10:00</div><div style="font-size:12px;font-weight:700;color:var(--tx)">London Opens — WATCH ONLY</div><div style="color:var(--green);font-size:14px">✓</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">London</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">DO NOT TRADE first 15 min. Watch direction — London hunts prev highs/lows.</div></div><div class="cc ck" style="background: var(--bg3); border-color: var(--green); border: 1px solid var(--green); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--green)">10:15</div><div style="font-size:12px;font-weight:700;color:var(--tx)">Scan for Setup — Primary Window</div><div style="color:var(--green);font-size:14px">✓</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">London</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Run 8-point checklist every M15 bar. All 8 required. Max 2 trades. Longs only.</div></div><div class="cc ck" style="background: var(--bg3); border-color: var(--gold); border: 1px solid var(--green); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--green)">12:30</div><div style="font-size:12px;font-weight:700;color:var(--gold)">Midday Trade Review</div><div style="color:var(--green);font-size:14px">✓</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">London</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Check open trades. TP1 hit? SL at BE? Any red events next 30 min?</div></div><div class="cc upcoming" style="background: var(--bg3); border: 1px solid var(--br); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--tx2)">14:30</div><div style="font-size:12px;font-weight:700;color:var(--tx)">Optional Rest</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">London</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Daily goal hit OR down 2% — STOP. Return for NY at 18:30 EAT.</div></div><div class="cc upcoming" style="background: var(--bg3); border: 1px solid var(--br); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--tx2)">16:00</div><div style="font-size:12px;font-weight:700;color:var(--tx)">Overlap — Scout NY Direction</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">Overlap</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">No new entries. Scout NY direction. Has H1 trend changed?</div></div><div class="cc upcoming" style="background: var(--bg3); border: 1px solid var(--br); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--tx2)">18:30</div><div style="font-size:12px;font-weight:700;color:var(--tx)">Pre-NY Preparation</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">Pre-NY</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Re-run full analysis. Update key levels. Recalculate ATR (will be higher).</div></div><div class="cc upcoming" style="background: var(--bg3); border: 1px solid var(--br); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--tx2)">19:00</div><div style="font-size:12px;font-weight:700;color:var(--tx)">NY Opens — WATCH ONLY</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">NY</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">DO NOT TRADE first 15 min. NY spikes hunt London highs/lows.</div></div><div class="cc upcoming" style="background: var(--bg3); border: 1px solid var(--br); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--tx2)">19:15</div><div style="font-size:12px;font-weight:700;color:var(--tx)">NY Killzone — Primary Window</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">NY</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Highest volatility. Long AND Short valid. Max 1 trade. Smaller lots.</div></div><div class="cc upcoming" style="background: var(--bg3); border: 1px solid var(--br); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--tx2)">21:00</div><div style="font-size:12px;font-weight:700;color:var(--tx)">No New Entries — Manage Only</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">NY</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Manage open positions only. Trail stops if TP1 hit.</div></div><div class="cc upcoming" style="background: var(--bg3); border: 1px solid var(--br); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--tx2)">22:30</div><div style="font-size:12px;font-weight:700;color:var(--tx)">⚠ Hard Close Warning</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">NY</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">30 min to mandatory flat. Close if TP2 unlikely before 23:00.</div></div><div class="cc upcoming" style="background: var(--bg3); border: 1px solid var(--br); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--tx2)">23:00</div><div style="font-size:12px;font-weight:700;color:var(--tx)">🔴 HARD CLOSE — ALL FLAT</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">Post</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Every position closed. Screenshot account. Record final balance.</div></div><div class="cc upcoming" style="background: var(--bg3); border: 1px solid var(--br); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--tx2)">23:15</div><div style="font-size:12px;font-weight:700;color:var(--tx)">Journal Every Trade</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">Post</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Entry/exit, conditions met, outcome, lessons. Screenshot charts.</div></div><div class="cc upcoming" style="background: var(--bg3); border: 1px solid var(--br); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--tx2)">23:30</div><div style="font-size:12px;font-weight:700;color:var(--tx)">Update Weekly Tracker</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">Post</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Win rate, avg R, consecutive losses, challenge progress.</div></div><div class="cc upcoming" style="background: var(--bg3); border: 1px solid var(--br); border-radius: 5px; padding: 13px; cursor: pointer; transition: 0.15s; position: relative; overflow: hidden;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--tx2)">23:45</div><div style="font-size:12px;font-weight:700;color:var(--tx)">Shutdown &amp; Rest</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.3">Post</div><div style="font-size:9px;color:var(--tx3);margin-top:3px;font-style:italic">Close platform. Discipline over motivation. Rest is your edge.</div></div></div></div>
 </div>
@@ -1813,6 +1812,33 @@ table.jt tr.tw td{background:rgba(0,201,122,.04)}table.jt tr.tl td{background:rg
 
 <script>
 'use strict';
+
+// ════════════════════════════════════════════════════════
+// SAFE FALLBACK INTEGRATION
+// Ensures the dashboard doesn't crash if the MT5 bridge or feed is delayed
+// ════════════════════════════════════════════════════════
+window.tsBridge = window.tsBridge || {
+    checkedCount: function() { return 0; },
+    getTradingStatistics: function() { return { tot: 0, wr: 0 }; }
+};
+
+if (typeof window.checkedCount !== 'function') {
+    window.checkedCount = function() {
+        // Fallback to reading the DOM checkboxes if bridge is down
+        return document.querySelectorAll('.cc.ck').length || 0;
+    };
+}
+
+if (typeof window.curSess !== 'function') {
+    window.curSess = function() {
+        // Fallback to calculating session based on East Africa Time (EAT)
+        const hour = new Date().getUTCHours() + 3;
+        if (hour >= 10 && hour < 14) return { name: 'London', active: true };
+        if (hour >= 15 && hour < 19) return { name: 'Overlap', active: true };
+        if (hour >= 19 && hour < 23) return { name: 'NY', active: true };
+        return { name: 'Asian/Sydney', active: false };
+    };
+}
 
 // ════════════════════════════════════════════════════════
 // STATE
@@ -6645,8 +6671,8 @@ function fetchEconomicCalendarV1(startDate, endDate) {
       return events;
     })
     .catch(error => {
-      console.error('🔍 DEBUG: Alpha Vantage Calendar fetch error:', error);
-      throw error;
+      console.warn('API fetch gracefully caught (Alpha Vantage Calendar):', error.message);
+      return [];
     });
 }
 
@@ -6837,8 +6863,8 @@ function fetchFinancialNews() {
       return news;
     })
     .catch(error => {
-      console.error('🔍 DEBUG: NewsAPI fetch error:', error);
-      throw error;
+      console.warn('API fetch gracefully caught (NewsAPI):', error.message);
+      return [];
     });
 }
 
@@ -7416,8 +7442,8 @@ function fetchFreeNewsHeadlines() {
       return news;
     })
     .catch(error => {
-      console.error('🔍 DEBUG: NewsAPI fetch error:', error);
-      throw error;
+      console.warn('API fetch gracefully caught (NewsAPI v2):', error.message);
+      return [];
     });
 }
 
@@ -8829,8 +8855,8 @@ function getComprehensiveFundamentalData(symbol) {
     earnings: earnings
   }))
   .catch(error => {
-    console.error('Comprehensive fundamental data error:', error);
-    throw error;
+    console.warn('API fetch gracefully caught (Comprehensive Fundamental):', error.message);
+    return { profile: {}, statistics: {}, financials: { income: {}, balance: {}, cash: {} }, dividends: {}, earnings: {} };
   });
 }
 
@@ -8888,43 +8914,44 @@ function exportBriefingPDF() {
 }
 
 // ════════════════════════════════════════════════════════
-// INIT
+// INIT — Wrapped in DOMContentLoaded to prevent race conditions
 // ════════════════════════════════════════════════════════
-loadAll();
-initializeStrategies();
-renderStrategyDashboard();
-populateStrategyDropdown();
-initializePatterns();
-requestNotifPermission();
-tickHeader();
-syncAllAccountDisplays();
-updateCockpit();
-renderCockpitRoutine();
-updateBriefingHistory();
-renderScanner();
-prefillSizer();
-doCalc();
-loadSettingsForm();
+document.addEventListener('DOMContentLoaded', () => {
+  loadAll();
+  initializeStrategies();
+  renderStrategyDashboard();
+  populateStrategyDropdown();
+  initializePatterns();
+  requestNotifPermission();
+  tickHeader();
+  syncAllAccountDisplays();
+  updateCockpit();
+  renderCockpitRoutine();
+  updateBriefingHistory();
+  renderScanner();
+  prefillSizer();
+  doCalc();
+  loadSettingsForm();
 
-// Start feed if key exists - simplified connection
-setTimeout(() => {
+  // Start feed if key exists — small timeout ensures DOM has breathed
   if (S.feedkey && S.feedkey.trim() !== '') {
     console.log('Auto-connecting feed with key...');
-    Feed.start().then(() => {
-      console.log('Feed connected successfully');
-      toast('📡 Live feed connected', 'ok');
-    }).catch(e => {
-      console.error('Feed connection failed:', e);
-      toast('⚠️ Feed connection failed: ' + e.message, 'er');
-    });
+    setTimeout(() => {
+      Feed.start().then(() => {
+        console.log('Feed connected successfully');
+        toast('📡 Live feed connected', 'ok');
+      }).catch(e => {
+        console.error('Feed connection failed:', e);
+        toast('⚠️ Feed connection failed. Check bridge.', 'er');
+      });
+    }, 500);
   } else {
     console.log('No feed key - skipping auto-connection');
   }
-  
+
   // Initialize free data integration
   integrateFreeDataIntoSystem();
-  
-}, 1000); // 1-second delay
+});
 
 // Initial coach greeting
 setTimeout(()=>{
